@@ -1,8 +1,12 @@
 ﻿using ExpenseSplitter.Core.Interfaces.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExpenseSplitter.API.Controllers
 {
+    [Authorize]
+    [ApiController]
+    [Route("api/balances")]
     public class BalanceController : ControllerBase
     {
         private readonly IBalanceRepository balanceRepository;
