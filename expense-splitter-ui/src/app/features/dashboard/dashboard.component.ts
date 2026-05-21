@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, inject } from "@angular/core";
 import { AuthService } from "../../core/services/auth.service";
 import { ExpenseService } from "../../core/services/expense.service";
 import { GroupService } from "../../core/services/group.service";
@@ -13,14 +13,32 @@ import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { CommonModule } from "@angular/common";
 import { MatCard, MatCardContent, MatCardHeader, MatCardTitle, MatCardActions } from "@angular/material/card";
 import { MatBadgeModule } from '@angular/material/badge';
+import { MatButton, MatIconButton } from '@angular/material/button';
+import { ThemeService } from '../../core/services/theme.service';
 
 @Component({
     selector: 'app-dashboard',
     templateUrl: 'dashboard.component.html',
     styleUrl: 'dashboard.component.scss',
-    imports: [RouterLink, MatIcon, MatProgressSpinner, CommonModule, MatCard, MatCardContent, MatCardHeader, MatCardTitle, MatCardActions, MatBadgeModule]
+    standalone: true,
+    imports: [
+        RouterLink,
+        MatIcon,
+        MatProgressSpinner,
+        CommonModule,
+        MatCard,
+        MatCardContent,
+        MatCardHeader,
+        MatCardTitle,
+        MatCardActions,
+        MatBadgeModule,
+        MatButton,
+        MatIconButton,
+    ],
 })
 export class DashboardComponent implements OnInit {
+
+    readonly themeService = inject(ThemeService);
 
     currentUser : User | null = null;
     groups: Group[] = [];

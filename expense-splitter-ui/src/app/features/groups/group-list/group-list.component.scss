@@ -1,0 +1,142 @@
+.page-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px;
+  }
+  
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  
+    h1 {
+      font-size: 28px;
+      font-weight: 600;
+      margin: 0;
+    }
+    p {
+      color: var(--app-text-secondary);
+      margin: 4px 0 0;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      button mat-icon {
+        margin-right: 4px;
+      }
+    }
+  }
+  
+  .search-field {
+    width: 100%;
+    margin-bottom: 24px;
+  }
+  
+  .loading-container {
+    display: flex;
+    justify-content: center;
+    padding: 60px;
+  }
+  
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 60px;
+    gap: 16px;
+    color: #999;
+  
+    mat-icon {
+      font-size: 64px;
+      width: 64px;
+      height: 64px;
+      color: #ddd;
+    }
+  
+    h3 { margin: 0; color: #555; }
+    p { margin: 0; }
+  }
+  
+  .group-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  
+  .group-card {
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+  
+    mat-card-content {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 20px;
+    }
+  }
+  
+  .group-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 22px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  
+  .group-info {
+    flex: 1;
+    min-width: 0;
+  
+    h2 {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  
+    .description {
+      font-size: 13px;
+      color: #666;
+      margin: 4px 0 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  
+    .group-meta {
+      display: flex;
+      gap: 12px;
+  
+      span {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 12px;
+        color: #888;
+  
+        mat-icon {
+          font-size: 14px;
+          width: 14px;
+          height: 14px;
+        }
+      }
+    }
+  }
+  
+  .arrow { color: #ccc; }

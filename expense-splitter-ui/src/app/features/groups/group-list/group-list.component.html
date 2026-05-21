@@ -1,0 +1,75 @@
+<div class="page-container">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <h1>My Groups</h1>
+            <p>Manage your expense groups</p>
+        </div>
+        <div class="header-actions">
+            <button
+                mat-icon-button
+                type="button"
+                class="theme-btn"
+                (click)="themeService.toggle()"
+                [attr.aria-label]="themeService.isDarkMode() ? 'Switch to light mode' : 'Switch to dark mode'">
+                <mat-icon>{{ themeService.isDarkMode() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+            </button>
+            <button mat-raised-button color="primary" routerLink="/groups/create">
+                <mat-icon>add</mat-icon>
+                New Group
+            </button>
+        </div>
+    </div>
+
+    <!-- Search -->
+    <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search Groups</mat-label>
+        <input matInput
+            [(ngModel)] = "searchQuery"
+            (ngModelChange) = "onSearch()"
+            placeholder="Search by Name...">
+        <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    <!-- Loading -->
+    <div class="loading-container" *ngIf="isLoading">
+        <mat-spinner diameter="40"></mat-spinner>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="!isLoading && filteredGroups.length == 0" >
+        <mat-icon>group_off</mat-icon>
+        <h3>No groups found.</h3>
+        <p>Create a group to start splitting expenses</p>
+        <button mat-raised-button color="primary" routerLink="/groups/create">
+            Create Group
+        </button>
+    </div>
+
+    <!-- Group Grid -->
+    <div class="group-grid" *ngIf="!isLoading && filteredGroups.length > 0">
+        <mat-card class="group-card" *ngFor="let group of filteredGroups" (click) = "navigateToGroups(group.id)">
+            <mat-card-content>
+                <div class="group-avatar" [style.background]="getAvatarColor(group.name)">
+                    {{ getGroupInitial(group.name) }}
+                </div>
+
+                <div class="group-info">
+                    <h2>{{ group.name }}</h2>
+                    <p class="description">
+                        {{ group.description || 'No Description' }}
+                    </p>
+                    <div class="group-meta">
+                        <span>
+                            <mat-icon>people</mat-icon>
+                            {{ group.memberCount }} members
+                        </span>
+                    </div>
+                </div>
+
+                <mat-icon class="arrow">chevron_right</mat-icon>
+            </mat-card-content>
+        </mat-card>
+    </div>
+</div>

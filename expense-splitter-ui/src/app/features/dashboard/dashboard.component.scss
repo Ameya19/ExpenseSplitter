@@ -18,7 +18,7 @@
         margin: 0;
       }
       p {
-        color: #666;
+        color: var(--app-text-secondary);
         margin: 4px 0 0;
       }
     }
@@ -26,7 +26,53 @@
     .header-actions {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 8px;
+
+      .notifications-btn {
+        margin-right: 4px;
+      }
+
+      .logout-btn {
+        border-radius: 8px;
+        padding: 0 16px;
+        height: 40px;
+
+        mat-icon {
+          margin-right: 6px;
+          font-size: 20px;
+          width: 20px;
+          height: 20px;
+        }
+      }
+    }
+  }
+
+  .btn-with-icon {
+    border-radius: 8px;
+
+    mat-icon {
+      margin-right: 6px;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  .view-all-btn {
+    flex-shrink: 0;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      margin-left: 2px;
+      transition: transform 0.2s ease;
+    }
+
+    &:hover mat-icon {
+      transform: translateX(2px);
     }
   }
   
@@ -38,7 +84,7 @@
     justify-content: center;
     padding: 80px;
     gap: 16px;
-    color: #666;
+    color: var(--app-text-secondary);
   }
   
   // Summary Cards
@@ -86,11 +132,11 @@
         font-size: 32px;
         font-weight: 700;
         margin: 0;
-        color: #333;
+        color: var(--app-text);
       }
       p {
         margin: 4px 0 0;
-        color: #666;
+        color: var(--app-text-secondary);
         font-size: 14px;
       }
     }
@@ -113,13 +159,20 @@
       justify-content: space-between;
       align-items: center;
       padding: 16px 16px 0;
-  
+
       mat-card-title {
         display: flex;
         align-items: center;
         gap: 8px;
         font-size: 18px;
       }
+    }
+
+    mat-card-actions {
+      display: flex;
+      justify-content: flex-end;
+      padding: 8px 16px 16px;
+      margin: 0;
     }
   }
   
@@ -129,17 +182,21 @@
     flex-direction: column;
     align-items: center;
     padding: 32px;
-    color: #999;
+    color: var(--app-text-muted);
     gap: 12px;
   
     mat-icon {
       font-size: 48px;
       width: 48px;
       height: 48px;
-      color: #ccc;
+      color: var(--app-empty-icon);
     }
   
     p { margin: 0; font-size: 14px; }
+
+    .btn-with-icon {
+      margin-top: 4px;
+    }
   }
   
   // Group List
@@ -149,11 +206,11 @@
       align-items: center;
       gap: 12px;
       padding: 12px 0;
-      border-bottom: 1px solid #f0f0f0;
+      border-bottom: 1px solid var(--app-border);
       cursor: pointer;
       transition: background 0.2s;
   
-      &:hover { background: #f9f9f9; }
+      &:hover { background: var(--app-surface-hover); }
       &:last-child { border-bottom: none; }
     }
   
@@ -174,10 +231,10 @@
     .group-info {
       flex: 1;
       h3 { margin: 0; font-size: 15px; }
-      p { margin: 2px 0 0; font-size: 12px; color: #666; }
+      p { margin: 2px 0 0; font-size: 12px; color: var(--app-text-secondary); }
     }
   
-    .group-arrow { color: #ccc; }
+    .group-arrow { color: var(--app-empty-icon); }
   }
   
   // Expense List
@@ -187,7 +244,7 @@
       align-items: center;
       gap: 12px;
       padding: 12px 0;
-      border-bottom: 1px solid #f0f0f0;
+      border-bottom: 1px solid var(--app-border);
   
       &:last-child { border-bottom: none; }
     }
@@ -196,7 +253,7 @@
       width: 40px;
       height: 40px;
       border-radius: 10px;
-      background: #e8f5e9;
+      background: var(--app-expense-icon-bg);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -208,12 +265,12 @@
     .expense-info {
       flex: 1;
       h3 { margin: 0; font-size: 15px; }
-      p { margin: 2px 0 0; font-size: 12px; color: #666; }
+      p { margin: 2px 0 0; font-size: 12px; color: var(--app-text-secondary); }
     }
   
     .expense-amount {
       font-weight: 600;
-      color: #333;
+      color: var(--app-text);
       font-size: 15px;
     }
   }
@@ -225,10 +282,10 @@
       align-items: flex-start;
       gap: 12px;
       padding: 12px 0;
-      border-bottom: 1px solid #f0f0f0;
+      border-bottom: 1px solid var(--app-border);
   
       &:last-child { border-bottom: none; }
-      &.unread { background: #f8f9ff; }
+      &.unread { background: var(--app-unread-bg); }
     }
   
     .notification-dot {
@@ -242,6 +299,6 @@
   
     .notification-info {
       h3 { margin: 0; font-size: 14px; font-weight: 600; }
-      p { margin: 4px 0 0; font-size: 12px; color: #666; }
+      p { margin: 4px 0 0; font-size: 12px; color: var(--app-text-secondary); }
     }
   }

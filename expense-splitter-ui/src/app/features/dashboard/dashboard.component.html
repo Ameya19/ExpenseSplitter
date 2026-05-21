@@ -1,198 +1,239 @@
 <div class="dashboard-container">
-    
-    <!-- Header -->
-    <div class="dashboard-header">
-        <div class="welcome">
-            <h1>Welcome, {{ currentUser?.displayName }}! 👋</h1>
-            <p>Here's what's happening with your expenses</p>
-        </div>
-        <div class="header-actions">
-            <button mat-icon-button
-            [matBadge] = "unreadCount"
-            matBadgeColor = "warn"
-            [matBadgeHidden] = "unreadCount === 0"
+
+  <!-- Header -->
+  <div class="dashboard-header">
+    <div class="welcome">
+      <h1>Welcome, {{ currentUser?.displayName }}! 👋</h1>
+      <p>Here's what's happening with your expenses</p>
+    </div>
+    <div class="header-actions">
+      <button
+        mat-icon-button
+        type="button"
+        class="header-btn theme-btn"
+        (click)="themeService.toggle()"
+        [attr.aria-label]="themeService.isDarkMode() ? 'Switch to light mode' : 'Switch to dark mode'">
+        <mat-icon>{{ themeService.isDarkMode() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        class="header-btn notifications-btn"
+        [matBadge]="unreadCount"
+        matBadgeColor="warn"
+        matBadgeSize="small"
+        [matBadgeHidden]="unreadCount === 0"
+        routerLink="/notifications"
+        aria-label="Notifications">
+        <mat-icon>notifications</mat-icon>
+      </button>
+      <button
+        mat-stroked-button
+        type="button"
+        class="header-btn logout-btn"
+        (click)="logout()">
+        <mat-icon>logout</mat-icon>
+        Sign out
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-container" *ngIf="isLoading">
+    <mat-spinner diameter="48"></mat-spinner>
+    <p>Loading Dashboard...</p>
+  </div>
+
+  <div class="dashboard-content" *ngIf="!isLoading">
+    <!-- Summary Cards -->
+    <div class="summary-cards">
+
+      <mat-card class="summary-card">
+        <mat-card-content>
+          <div class="card-icon groups">
+            <mat-icon>group</mat-icon>
+          </div>
+          <div class="card-info">
+            <h2>{{ groups.length }}</h2>
+            <p>Active Groups</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="summary-card">
+        <mat-card-content>
+          <div class="card-icon expenses">
+            <mat-icon>receipt_long</mat-icon>
+          </div>
+          <div class="card-info">
+            <h2>{{ recentExpenses.length }}</h2>
+            <p>Recent Expenses</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="summary-card">
+        <mat-card-content>
+          <div class="card-icon notifications">
+            <mat-icon>notifications</mat-icon>
+          </div>
+          <div class="card-info">
+            <h2>{{ unreadCount }}</h2>
+            <p>Unread Notifications</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+    </div>
+
+    <div class="dashboard-grid">
+
+      <!-- Group Section -->
+      <mat-card class="dashboard-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>group</mat-icon>
+            My Groups
+          </mat-card-title>
+          <button
+            mat-button
+            color="primary"
+            class="view-all-btn"
+            routerLink="/groups">
+            View all
+            <mat-icon iconPositionEnd>arrow_forward</mat-icon>
+          </button>
+        </mat-card-header>
+
+        <mat-card-content>
+          <div class="empty-state" *ngIf="groups.length === 0">
+            <mat-icon>group_add</mat-icon>
+            <p>No groups yet</p>
+            <button
+              mat-raised-button
+              color="primary"
+              class="btn-with-icon"
+              routerLink="/groups/create">
+              <mat-icon>add</mat-icon>
+              Create Group
+            </button>
+          </div>
+
+          <div class="group-list" *ngIf="groups.length > 0">
+            <div
+              class="group-item"
+              *ngFor="let group of groups"
+              (click)="navigateToGroup(group.id)">
+              <div class="group-avatar">
+                {{ group.name.charAt(0).toUpperCase() }}
+              </div>
+              <div class="group-info">
+                <h3>{{ group.name }}</h3>
+                <p>{{ group.memberCount }} members</p>
+              </div>
+              <mat-icon class="group-arrow">chevron_right</mat-icon>
+            </div>
+          </div>
+        </mat-card-content>
+
+        <mat-card-actions *ngIf="groups.length > 0">
+          <button
+            mat-raised-button
+            color="primary"
+            class="btn-with-icon"
+            routerLink="/groups/create">
+            <mat-icon>add</mat-icon>
+            New Group
+          </button>
+        </mat-card-actions>
+      </mat-card>
+
+      <!-- Recent Expenses Section -->
+      <mat-card class="dashboard-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>receipt_long</mat-icon>
+            Recent Expenses
+          </mat-card-title>
+          <button
+            mat-button
+            color="primary"
+            class="view-all-btn"
+            routerLink="/expenses">
+            View all
+            <mat-icon iconPositionEnd>arrow_forward</mat-icon>
+          </button>
+        </mat-card-header>
+
+        <mat-card-content>
+          <div class="empty-state" *ngIf="recentExpenses.length === 0">
+            <mat-icon>add_shopping_cart</mat-icon>
+            <p>No expenses yet</p>
+          </div>
+
+          <div class="expense-list" *ngIf="recentExpenses.length > 0">
+            <div
+              class="expense-item"
+              *ngFor="let expense of recentExpenses">
+              <div class="expense-icon">
+                <mat-icon>{{ getCategoryIcon(expense.category) }}</mat-icon>
+              </div>
+              <div class="expense-info">
+                <h3>{{ expense.title }}</h3>
+                <p>{{ getCategoryLabel(expense.category) }}</p>
+              </div>
+              <div class="expense-amount">
+                ₹{{ expense.amount | number:'1.2-2' }}
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Notifications Section -->
+      <mat-card class="dashboard-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>notifications</mat-icon>
+            Notifications
+          </mat-card-title>
+          <button
+            mat-button
+            color="primary"
+            class="view-all-btn"
             routerLink="/notifications">
-                <mat-icon>notifications</mat-icon>
+            View all
+            <mat-icon iconPositionEnd>arrow_forward</mat-icon>
+          </button>
+        </mat-card-header>
+
+        <mat-card-content>
+          <div class="empty-state" *ngIf="notifications.length === 0">
+            <mat-icon>notifications_none</mat-icon>
+            <p>No notifications</p>
+            <button
+              mat-raised-button
+              color="primary"
+              class="btn-with-icon"
+              routerLink="/notifications">
+              <mat-icon>arrow_forward</mat-icon>
+              View notifications
             </button>
-            <button mat-stroked-button (click)="logout()">
-                <mat-icon>logout</mat-icon>
-            </button>
-        </div>
+          </div>
+
+          <div class="notification-list" *ngIf="notifications.length > 0">
+            <div
+              class="notification-item"
+              *ngFor="let notification of notifications"
+              [class.unread]="!notification.isRead">
+              <div class="notification-dot" *ngIf="!notification.isRead"></div>
+              <div class="notification-info">
+                <h3>{{ notification.title }}</h3>
+                <p>{{ notification.message }}</p>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
     </div>
-
-    <!-- Loading -->
-    <div class="loading-container" *ngIf="isLoading">
-        <mat-spinner diameter="48"></mat-spinner>
-        <p>Loading Dashboard...</p>
-    </div>
-
-    <div class="dashboard-content" *ngIf="!isLoading">
-        <!-- Summary Cards -->
-        <div class="summary-cards">
-            
-            <mat-card class="summary-card">
-                <mat-card-content>
-                    <div class="card-icon groups">
-                        <mat-icon>group</mat-icon>
-                    </div>
-                    <div class="card-info">
-                        <h2>{{ groups.length }}</h2>
-                        <p>Active Groups</p>
-                    </div>
-                </mat-card-content>
-            </mat-card>
-
-            <mat-card class="summary-card">
-                <mat-card-content>
-                    <div class="card-icon expenses">
-                        <mat-icon>receipt_long</mat-icon>
-                    </div>
-                    <div class="catd-info">
-                        <h2>{{ recentExpenses.length }}</h2>
-                        <p>Recent Expenses</p>
-                    </div>
-                </mat-card-content>
-            </mat-card>
-
-            <mat-card class="summary-card">
-                <mat-card-content>
-                    <div class="card-icon notifications">
-                        <mat-icon>notifications</mat-icon>
-                    </div>
-                    <div class="card-info">
-                        <h2>{{ unreadCount }}</h2>
-                        <p>Unread Notifications</p>
-                    </div>
-                </mat-card-content>
-            </mat-card>
-
-        </div>
-
-        <div class="dashboard-grid">
-
-            <!-- Group Section -->
-            <mat-card class="dashboard-card">
-                <mat-card-header>
-                    <mat-card-title>
-                        <mat-icon>group</mat-icon>
-                        My Groups
-                    </mat-card-title>
-                    <button mat-button color="primary" routerLink="/groups">
-                        View All
-                    </button>
-                </mat-card-header>
-
-                <mat-card-content>
-                    <!-- Empty State -->
-                    <div class="empty-state" *ngIf="groups.length === 0">
-                        <mat-icon>group_add</mat-icon>
-                        <p>No groups yet</p>
-                        <button mat-raised-button color="primary" routerLink="/groups/create">
-                            Create Group
-                        </button>
-                    </div>
-
-                    <!-- Group List -->
-                    <div class="group-list" *ngIf="groups.length > 0">
-                        <div class="group-item"
-                            *ngFor="let group of groups"
-                            (click)="navigateToGroup(group.id)">
-                        <div class="group-avatar">
-                            {{ group.name.charAt(0).toUpperCase() }}
-                        </div>
-                        <div class="group-info">
-                            <h3>{{ group.name }}</h3>
-                            <p>{{ group.memberCount }} members</p>
-                        </div>
-                        <mat-icon class="group-arrow">chevron_right</mat-icon>
-                        </div>
-                    </div>
-                </mat-card-content>
-
-                <mat-card-actions>
-                    <button mat-raised-button color="primary"
-                            routerLink="/groups/create">
-                      <mat-icon>add</mat-icon>
-                      New Group
-                    </button>
-                  </mat-card-actions>
-            </mat-card>
-      
-            <!-- Recent Expenses Section -->
-            <mat-card class="dashboard-card">
-              <mat-card-header>
-                <mat-card-title>
-                  <mat-icon>receipt_long</mat-icon>
-                  Recent Expenses
-                </mat-card-title>
-                <button mat-button color="primary" routerLink="/expenses">
-                  View All
-                </button>
-              </mat-card-header>
-      
-              <mat-card-content>
-                <!-- Empty State -->
-                <div class="empty-state" *ngIf="recentExpenses.length === 0">
-                  <mat-icon>add_shopping_cart</mat-icon>
-                  <p>No expenses yet</p>
-                </div>
-      
-                <!-- Expense List -->
-                <div class="expense-list" *ngIf="recentExpenses.length > 0">
-                  <div class="expense-item"
-                       *ngFor="let expense of recentExpenses">
-                    <div class="expense-icon">
-                      <mat-icon>
-                        {{ getCategoryIcon( expense.category) }}
-                      </mat-icon>
-                    </div>
-                    <div class="expense-info">
-                      <h3>{{ expense.title }}</h3>
-                      <p>{{ getCategoryLabel(expense.category) }}</p>
-                    </div>
-                    <div class="expense-amount">
-                      ₹{{ expense.amount | number:'1.2-2' }}
-                    </div>
-                  </div>
-                </div>
-              </mat-card-content>
-            </mat-card>
-      
-            <!-- Notifications Section -->
-            <mat-card class="dashboard-card">
-              <mat-card-header>
-                <mat-card-title>
-                  <mat-icon>notifications</mat-icon>
-                  Notifications
-                </mat-card-title>
-                <button mat-button color="primary" routerLink="/notifications">
-                  View All
-                </button>
-              </mat-card-header>
-      
-              <mat-card-content>
-                <!-- Empty State -->
-                <div class="empty-state" *ngIf="notifications.length === 0">
-                  <mat-icon>notifications_none</mat-icon>
-                  <p>No notifications</p>
-                </div>
-      
-                <!-- Notification List -->
-                <div class="notification-list" *ngIf="notifications.length > 0">
-                  <div class="notification-item"
-                       *ngFor="let notification of notifications"
-                       [class.unread]="!notification.isRead">
-                    <div class="notification-dot"
-                         *ngIf="!notification.isRead">
-                    </div>
-                    <div class="notification-info">
-                      <h3>{{ notification.title }}</h3>
-                      <p>{{ notification.message }}</p>
-                    </div>
-                  </div>
-                </div>
-              </mat-card-content>
-            </mat-card>
-        </div>
-    </div>
+  </div>
 </div>

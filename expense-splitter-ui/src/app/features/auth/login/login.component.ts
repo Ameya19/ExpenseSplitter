@@ -5,6 +5,8 @@ import { Router} from "@angular/router";
 import { MatCard, MatCardHeader, MatCardTitle, MatCardSubtitle, MatCardContent, MatCardActions } from '@angular/material/card';
 import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
+import { MatInput } from '@angular/material/input';
+import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { CommonModule } from "@angular/common";
 import { RouterLink } from "@angular/router";
@@ -14,7 +16,25 @@ import { RouterLink } from "@angular/router";
     templateUrl: 'login.component.html',
     styleUrl: 'login.component.scss',
     standalone: true,
-    imports: [MatCard, MatCardHeader, MatCardTitle, MatCardSubtitle, MatCardContent, MatFormField, MatLabel, MatIcon, MatError, MatCardActions, MatProgressSpinner, ReactiveFormsModule, CommonModule, RouterLink],
+    imports: [
+        MatCard,
+        MatCardHeader,
+        MatCardTitle,
+        MatCardSubtitle,
+        MatCardContent,
+        MatCardActions,
+        MatFormField,
+        MatLabel,
+        MatInput,
+        MatIcon,
+        MatError,
+        MatButton,
+        MatIconButton,
+        MatProgressSpinner,
+        ReactiveFormsModule,
+        CommonModule,
+        RouterLink,
+    ],
 })
 export class LoginComponent {
     loginForm: FormGroup;
