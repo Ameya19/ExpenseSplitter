@@ -86,7 +86,7 @@ namespace ExpenseSplitter.API.Controllers
             }
         }
 
-        [HttpPut("{id: Guid}/read")]
+        [HttpPut("{id:Guid}/read")]
         public async Task<IActionResult> MarkAsRead(Guid id)
         {
             var result = await this.notificationRepository.MarkAsRead(id);
@@ -117,7 +117,7 @@ namespace ExpenseSplitter.API.Controllers
             }
         }
 
-        [HttpDelete("{id: Guid}")]
+        [HttpDelete("{id:Guid}")]
         public async Task<IActionResult> DeleteNotification(Guid id)
         {
             var result = await this.notificationRepository.DeleteNotification(id);
