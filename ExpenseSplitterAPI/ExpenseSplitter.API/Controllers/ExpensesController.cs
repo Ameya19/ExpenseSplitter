@@ -58,6 +58,7 @@ namespace ExpenseSplitter.API.Controllers
                 {
                     response.Add(new Expense
                     {
+                        Id = expense.Id,
                         Amount = expense.Amount,
                         Title = expense.Title,
                         GroupId = expense.GroupId,
