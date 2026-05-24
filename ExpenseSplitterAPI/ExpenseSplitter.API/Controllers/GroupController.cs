@@ -1,12 +1,14 @@
 ﻿using ExpenseSplitter.Core.DTOs.Group;
 using ExpenseSplitter.Core.Entities;
 using ExpenseSplitter.Core.Interfaces.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExpenseSplitter.API.Controllers
 {
+    [Authorize]
     [ApiController]
-    [Route("api/group")]
+    [Route("api/groups")]
     public class GroupController : ControllerBase
     {
         private readonly IGroupRepository groupRepository;

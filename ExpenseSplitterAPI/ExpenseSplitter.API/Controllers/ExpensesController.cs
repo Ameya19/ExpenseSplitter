@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ExpenseSplitter.API.Controllers
 {
     //https://localhost:xxxx/api/expenses
+    [Authorize]
     [Route("api/expenses")]
     [ApiController]
     public class ExpensesController : ControllerBase
@@ -89,6 +90,7 @@ namespace ExpenseSplitter.API.Controllers
             {
                 var response = new Expense
                 {
+                    Id = expenseDetails.Id,
                     Amount = expenseDetails.Amount,
                     Title = expenseDetails.Title,
                     GroupId = expenseDetails.GroupId,
@@ -123,6 +125,7 @@ namespace ExpenseSplitter.API.Controllers
                 {
                     response.Add(new Expense
                     {
+                        Id = expense.Id,
                         Amount = expense.Amount,
                         Title = expense.Title,
                         GroupId = expense.GroupId,
@@ -156,6 +159,7 @@ namespace ExpenseSplitter.API.Controllers
                 {
                     response.Add(new Expense
                     {
+                        Id = expense.Id,
                         Amount = expense.Amount,
                         Title = expense.Title,
                         GroupId = expense.GroupId,
