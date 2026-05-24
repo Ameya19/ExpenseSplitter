@@ -1,0 +1,123 @@
+<div class="page-container">
+
+    <!-- Loading -->
+    <div class="loading-container" *ngIf="isLoading">
+        <mat-spinner diameter="48"></mat-spinner>
+    </div>
+
+    <ng-container *ngIf="group && !isLoading">
+
+        <!-- Header -->
+        <div class="page-header">
+            <div class="header-left">
+                <button mat-icon-button routerLink="/groups">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+                <div class="group-avatar">
+                    {{ group.name.charAt(0).toUpperCase() }}
+                </div>
+                <div>
+                    <h1>{{ group.name }}</h1>
+                    <p>{{ group.description || 'No Description' }}</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button mat-stroked-button [routerLink]="['/groups',groupId, 'edit']">
+                    <mat-icon>edit</mat-icon>
+                    Edit
+                </button>
+                <button mat-stroked-button color="warn" (click)="deleteGroup()">
+                    <mat-icon>delete</mat-icon>
+                    Delete
+                </button>
+                <button mat-stroked-button color="primary" [routerLink]="['/expenses', 'create']" [queryParams]="{ groupId: groupId}">
+                    <mat-icon>add</mat-icon>
+                    Add Expense
+                </button>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <mat-tab-group>
+
+            <!-- Expense Tab -->
+            <mat-tab label="Expenses">
+                <div class="tab-content">
+                    <div class="empty-state" *ngIf="expenses.length == 0">
+                        <mat-icon>receipt_long</mat-icon>
+                        <p>No Expenses yet</p>
+                        <button mat-stroked-button color="primary" [routerLink]="['/expenses', 'create']" [queryParams]="{ groupId:groupId }">
+                            Add First Expense
+                        </button>
+                    </div>
+
+                    <div class="expense-list" *ngIf="expenses.length > 0">
+                        <div class="expense-item" *ngFor="let expense of expenses">
+                            <div class="expense-icon">
+                                <mat-icon>{{ getCategoryIcon(expense.category) }}</mat-icon>
+                            </div>
+                            <div class="expense-info">
+                                <h3>{{ expense.title }}</h3>
+                                <p>{{ getCategoryLabel(expense.category) }}</p>
+                            </div>
+                            <div class="expense-amount">
+                                ₹{{ expense.amount | number: '1.2-2' }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </mat-tab>
+
+            <!-- Members Tab -->
+            <mat-tab label="Members">
+                <div class="tab-content">
+                    <div class="member-list">
+                        <div class="member-item" *ngFor="let member of group.members">
+                            <div class="member-avatar">
+                                {{ member.displayName.charAt(0).toUpperCase() }}
+                            </div>
+                            <div class="member-info">
+                                <h3>{{ member.displayName }}</h3>
+                                <p>{{ member.role }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </mat-tab>
+
+            <!-- Balances Tab -->
+            <mat-tab label="Balances">
+                <div class="tab-content">
+                    <div class="balances-list" *ngIf="balances.length > 0">
+                        <div class="balance-item" *ngFor="let balance of balances">
+                            <div class="balance-avatar">
+                                {{ balance.displayName.charAt(0).toUpperCase() }}
+                            </div>
+                            <div class="balance-info">
+                                <h3>{{ balance.displayName }}</h3>
+                                <p>{{ balance.status }}</p>
+                            </div>
+                            <div class="balance-amount" [style.color]="getBalanceColor(balance.netBalance)">
+                                {{ balance.netBalance > 0 ? '+' : '' }}
+                                ₹{{ balance.netBalance | number: '1.2-2' }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Suggestions -->
+                    <div class="suggestions" *ngIf="suggestions.length > 0">
+                        <div class="suggestion-item" *ngFor="let suggestion of suggestions">
+                            <span class="from">{{ suggestion.toUserName }}</span>
+                            <mat-card>arrow-forward</mat-card>
+                            <span class="to">{{ suggestion.toUserName }}</span>
+                            <span class="amount">
+                                ₹{{ suggestion.amount | number:'1.2-2' }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </mat-tab>
+        </mat-tab-group>
+
+    </ng-container>
+</div>

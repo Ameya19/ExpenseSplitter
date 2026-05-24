@@ -19,11 +19,11 @@ export class ExpenseService {
     }
 
     getExpensesByGroup(groupId: string): Observable<Expense[]> {
-        return this.http.get<Expense[]>(`${this.apiUrl}/${groupId}`);
+        return this.http.get<Expense[]>(`${this.apiUrl}/group/${groupId}`);
     }
 
     getExpensesByUser(userId: string): Observable<Expense[]> {
-        return this.http.get<Expense[]>(`${this.apiUrl}/${userId}`);
+        return this.http.get<Expense[]>(`${this.apiUrl}/user/${userId}`);
     }
 
     updateExpense(expenseId: string, request: Partial<createExpenseRequest>): Observable<Expense> {

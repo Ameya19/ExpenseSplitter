@@ -1,0 +1,113 @@
+<div class="page-container">
+
+    <!-- Header -->
+    <div class="page-header">
+        <button mat-icon-button (click)="goBack()">
+            <mat-icon>arrow_back</mat-icon>
+        </button>
+        <h1>{{ isEditMode ? "Edit Expense" : "Create Expense" }}</h1>
+    </div>
+    
+    <mat-card class="form-card">
+        <mat-card-content>
+            <form [formGroup]="expenseForm" (ngSubmit)="onSubmit()">
+
+                <!-- Title -->
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Title</mat-label>
+                    <div class="field-details">
+                        <input matInput placeholder="Enter title for expense" formControlName="title">
+                        <mat-icon>receipt</mat-icon>
+                    </div>
+                    <mat-error *ngIf="title?.hasError('required')">
+                        Title is required
+                    </mat-error> 
+                </mat-form-field>
+
+                <!-- Amount -->
+                <mat-form-field appearance="outline" class="full-width amount-field">
+                    <mat-label>Amount (₹)</mat-label>
+                    <input matInput placeholder="0.00" formControlName="amount">
+                    <mat-error *ngIf="amount?.hasError('required')">
+                        Amount is required
+                    </mat-error>
+                    <mat-error *ngIf="amount?.hasError('min')">
+                        Amount must be greater than 0.
+                    </mat-error>
+                </mat-form-field>
+
+                <!-- Category -->
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Category</mat-label>
+                    <mat-select formControlName="category">
+                        <mat-option *ngFor="let cat of categories" [value]="cat.value">
+                            {{ cat.label }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <!-- Split Type -->
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Split Type</mat-label>
+                    <mat-select formControlName="splitType">
+                        <mat-option *ngFor="let split of splitType" [value]="split.value">
+                            {{ split.label }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <!-- Date -->
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Date</mat-label>
+                    <input matInput [matDatepicker]="picker" formControlName="date">
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+
+                <!-- Group ID -->
+                <mat-form-field appearance="outline" class="full-width" *ngIf="!groupId">
+                    <mat-label>Group ID</mat-label>
+                    <mat-select formControlName="groupId">
+
+                        <mat-option *ngIf="isGroupsLoading" disabled>
+                            Loading groups...
+                        </mat-option>
+
+                        <mat-option *ngFor="let group of groups" [value]="group.id">
+                            <div class="group-option">
+                                <span>{{ group.name }}</span>
+                            </div>
+                        </mat-option>
+
+                        <!-- No groups state -->
+                        <mat-option *ngIf="!isGroupsLoading && groups.length === 0" disabled>
+                            No groups found — create one first
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="groupIdControl?.hasError('required')">
+                        Group ID is required
+                    </mat-error>
+                </mat-form-field>
+
+                <!-- Error -->
+                <div class="error-message" *ngIf="errorMessage">
+                    <mat-icon>error</mat-icon>
+                    {{ errorMessage }}
+                </div>
+
+                <!-- Actions -->
+                <div class="form-actions">
+                    <button mat-stroked-button type="button" (click)="goBack()">
+                        Cancel
+                    </button>
+                    <button mat-raised-button type="submit" [disabled]="isLoading || expenseForm.invalid">
+                        <mat-spinner diameter="20" *ngIf="isLoading"></mat-spinner>
+                        <span *ngIf="!isLoading">
+                            {{ isEditMode ? "Update" : "Add Expense" }}
+                        </span>
+                    </button>
+                </div>
+            </form>
+        </mat-card-content>
+    </mat-card>
+</div>

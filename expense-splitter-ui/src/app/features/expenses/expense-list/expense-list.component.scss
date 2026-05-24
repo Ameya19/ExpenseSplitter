@@ -1,0 +1,153 @@
+.page-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px;
+  }
+  
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  
+    h1 { font-size: 28px; font-weight: 600; margin: 0; }
+    p { color: #666; margin: 4px 0 0; }
+  }
+  
+  .filters {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+  
+    .search-field { flex: 1; }
+    .category-field { width: 180px; }
+  
+    @media (max-width: 600px) {
+      flex-direction: column;
+      .category-field { width: 100%; }
+    }
+  }
+  
+  .summary-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: #f5f5f5;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    font-size: 14px;
+    color: #666;
+  
+    .total {
+      font-weight: 700;
+      color: #333;
+      font-size: 16px;
+    }
+  }
+  
+  .loading-container {
+    display: flex;
+    justify-content: center;
+    padding: 60px;
+  }
+  
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 60px;
+    gap: 16px;
+    color: #999;
+  
+    mat-icon {
+      font-size: 64px;
+      width: 64px;
+      height: 64px;
+      color: #ddd;
+    }
+  
+    h3 { margin: 0; color: #555; }
+    p { margin: 0; }
+  }
+  
+  .expense-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .expense-card {
+    mat-card-content {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+    }
+  }
+  
+  .expense-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  
+    mat-icon { font-size: 24px; width: 24px; height: 24px; }
+  }
+  
+  .expense-info {
+    flex: 1;
+    min-width: 0;
+  
+    h3 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  
+    .expense-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+    }
+  
+    .category-chip {
+      background: #f0f0f0;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      color: #666;
+    }
+  
+    .date {
+      font-size: 12px;
+      color: #888;
+    }
+  }
+  
+  .expense-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+  
+    .amount {
+      font-weight: 700;
+      font-size: 16px;
+      color: #333;
+    }
+  
+    .actions {
+      display: flex;
+      gap: 4px;
+  
+      button { transform: scale(0.85); }
+    }
+  }

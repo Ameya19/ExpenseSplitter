@@ -24,12 +24,12 @@ export const routes: Routes = [
         loadChildren: () =>
             import('./features/groups/groups.routes').then(m => m.groupRoutes)
     },
-    /*{
+    {
         path: 'expenses',
         canActivate: [authGuard],
         loadChildren: () =>
             import('./features/expenses/expenses.routes').then(m => m.expenseRoutes)
-    },*/
+    },
     {
         path: '**',
         redirectTo: 'dashboard'

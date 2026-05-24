@@ -37,6 +37,7 @@ export class GroupFormComponent implements OnInit {
     isEditMode = false;
     groupId: string | null = null;
     errorMessage = '';
+    userId: string | undefined = undefined;
 
     constructor(private router: Router,
         private fb: FormBuilder,
@@ -87,6 +88,14 @@ export class GroupFormComponent implements OnInit {
 
         const currentUser = this.authService.getCurrentUser();
 
+        if(!currentUser)
+        {
+            this.errorMessage = "User is not logged in.";
+            this.isLoading = false;
+            this.authService.logout();
+            return;
+        }
+
         if(this.isEditMode && this.groupId)
         {
             //Update
@@ -103,10 +112,13 @@ export class GroupFormComponent implements OnInit {
         }
         else{
             //Create
-            this.groupService.createGroup(this.groupFrom.value).subscribe({
+            this.groupService.createGroup({name: this.groupFrom.value.name,
+                description: this.groupFrom.value.description,
+                createdByUserId: currentUser.id
+            }).subscribe({
                 next:(group) => {
                     this.isLoading = false;
-                    this.router.navigate(['/groups', group.id]);
+                    this.router.navigate(['/groups'], { replaceUrl: true });
                 },
                 error: () => {
                     this.isLoading = false;

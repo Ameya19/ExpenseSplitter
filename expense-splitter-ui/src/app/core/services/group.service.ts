@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { environment } from "../../../environments/environment";
 import { HttpClient } from "@angular/common/http";
 import { CreateGroupRequest, Group, GroupDetail } from "../models/group.model";
-import { Observable } from "rxjs";
+import { map, Observable } from "rxjs";
 
 @Injectable({ providedIn: 'root'})
 export class GroupService {
@@ -27,7 +27,9 @@ export class GroupService {
     }
 
     deleteGroup(id: string): Observable<void> {
-        return this.http.delete<void>(`${this.apiUrl}/${id}`);
+        return this.http
+            .delete(`${this.apiUrl}/${id}`, { observe: 'response', responseType: 'text' })
+            .pipe(map(() => undefined));
     }
 
     addMember(userId: string, groupId: string): Observable<void> {
