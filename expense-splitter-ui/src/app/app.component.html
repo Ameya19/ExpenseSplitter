@@ -1,1 +1,7 @@
-<router-outlet></router-outlet>
+<!-- Show navbar only when logged in -->
+<app-navbar *ngIf="showNavbar"></app-navbar>
+
+<main [class.with-navbar]="showNavbar">
+    <router-outlet></router-outlet>
+</main>
+

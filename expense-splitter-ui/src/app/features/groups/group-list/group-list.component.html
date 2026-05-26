@@ -7,14 +7,6 @@
             <p>Manage your expense groups</p>
         </div>
         <div class="header-actions">
-            <button
-                mat-icon-button
-                type="button"
-                class="theme-btn"
-                (click)="themeService.toggle()"
-                [attr.aria-label]="themeService.isDarkMode() ? 'Switch to light mode' : 'Switch to dark mode'">
-                <mat-icon>{{ themeService.isDarkMode() ? 'light_mode' : 'dark_mode' }}</mat-icon>
-            </button>
             <button mat-raised-button color="primary" routerLink="/groups/create">
                 <mat-icon>add</mat-icon>
                 New Group

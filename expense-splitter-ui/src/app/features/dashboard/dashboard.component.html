@@ -9,14 +9,6 @@
     <div class="header-actions">
       <button
         mat-icon-button
-        type="button"
-        class="header-btn theme-btn"
-        (click)="themeService.toggle()"
-        [attr.aria-label]="themeService.isDarkMode() ? 'Switch to light mode' : 'Switch to dark mode'">
-        <mat-icon>{{ themeService.isDarkMode() ? 'light_mode' : 'dark_mode' }}</mat-icon>
-      </button>
-      <button
-        mat-icon-button
         class="header-btn notifications-btn"
         [matBadge]="unreadCount"
         matBadgeColor="warn"

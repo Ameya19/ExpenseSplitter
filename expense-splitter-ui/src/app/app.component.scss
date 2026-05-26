@@ -1,0 +1,9 @@
+main {
+    min-height: 100vh;
+    background: var(--app-bg);
+    color: var(--app-text);
+  
+    &.with-navbar {
+      min-height: calc(100vh - 64px);
+    }
+}

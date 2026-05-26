@@ -1,0 +1,191 @@
+.page-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px;
+  }
+  
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  
+    h1 { font-size: 28px; font-weight: 600; margin: 0; }
+    p { color: var(--app-text-secondary); margin: 4px 0 0; }
+  }
+  
+  .group-selector-card {
+    margin-bottom: 24px;
+  
+    mat-card-content { padding: 16px; }
+  
+    .full-width { width: 100%; }
+  }
+  
+  .section {
+    margin-bottom: 32px;
+  
+    h2 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: var(--app-text);
+  
+      mat-icon { color: var(--app-link); }
+    }
+  }
+  
+  .loading-container {
+    display: flex;
+    justify-content: center;
+    padding: 32px;
+  }
+  
+  // Settled card
+  .settled-card, .empty-card {
+    mat-card-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 32px;
+      gap: 12px;
+      color: var(--app-text-muted);
+  
+      mat-icon {
+        font-size: 48px;
+        width: 48px;
+        height: 48px;
+        color: #4caf50;
+      }
+  
+      p { margin: 0; }
+    }
+  }
+  
+  // Suggestions
+  .suggestions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .suggestion-card {
+    mat-card-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+  }
+  
+  .suggestion-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+  }
+  
+  .user {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    min-width: 80px;
+  
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: white;
+      font-size: 16px;
+    }
+  
+    span { font-size: 13px; font-weight: 500; }
+  
+    &.from-user .avatar { background: #f44336; }
+    &.to-user .avatar { background: #4caf50; }
+  }
+  
+  .transaction {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  
+    .amount {
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--app-text);
+    }
+  
+    mat-icon { color: var(--app-text-secondary); }
+  }
+  
+  // Settlements History
+  .settlements-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .settlement-card {
+    mat-card-content {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      flex-wrap: wrap;
+    }
+  }
+  
+  .status-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    min-width: 100px;
+  }
+  
+  .settlement-info {
+    flex: 1;
+  
+    .users {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 15px;
+  
+      .from { font-weight: 600; color: #f44336; }
+      .to { font-weight: 600; color: #4caf50; }
+      mat-icon { font-size: 16px; color: var(--app-text-secondary); }
+    }
+  
+    .meta {
+      display: flex;
+      gap: 12px;
+      margin-top: 4px;
+      font-size: 12px;
+      color: var(--app-text-muted);
+    }
+  }
+  
+  .settlement-amount {
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--app-text);
+  }
+  
+  .settlement-actions {
+    display: flex;
+    gap: 8px;
+  }

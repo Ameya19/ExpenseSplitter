@@ -69,3 +69,52 @@ body {
   color: var(--app-text);
   transition: background-color 0.2s ease, color 0.2s ease;
 }
+
+// Shared page layout tokens (used across feature components)
+.page-container {
+  color: var(--app-text);
+}
+
+.page-header {
+  h1 {
+    color: var(--app-text);
+  }
+
+  p {
+    color: var(--app-text-secondary);
+  }
+}
+
+.section h2 {
+  color: var(--app-text);
+
+  mat-icon {
+    color: var(--app-link);
+  }
+}
+
+.summary-bar {
+  background: var(--app-surface-hover);
+  color: var(--app-text-secondary);
+
+  .total {
+    color: var(--app-text);
+  }
+}
+
+.error-state,
+.empty-card mat-card-content,
+.settled-card mat-card-content {
+  color: var(--app-text-muted);
+}
+
+.transaction .amount,
+.settlement-amount {
+  color: var(--app-text);
+}
+
+.transaction mat-icon,
+.settlement-info .meta,
+.settlement-info .users mat-icon {
+  color: var(--app-text-secondary);
+}

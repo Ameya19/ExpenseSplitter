@@ -1,9 +1,9 @@
-import { Component, OnInit, inject } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { Router, RouterLink } from "@angular/router";
 import { Group } from "../../../core/models/group.model";
 import { GroupService } from "../../../core/services/group.service";
 import { AuthService } from "../../../core/services/auth.service";
-import { MatButton, MatIconButton } from "@angular/material/button";
+import { MatButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
 import { MatFormField, MatLabel, MatSuffix } from "@angular/material/form-field";
 import { MatInput } from "@angular/material/input";
@@ -11,17 +11,13 @@ import { FormsModule } from "@angular/forms";
 import { CommonModule } from "@angular/common";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { MatCardContent, MatCard } from "@angular/material/card";
-import { ThemeService } from "../../../core/services/theme.service";
-
 @Component({
     selector: 'app-group-list',
     templateUrl: 'group-list.component.html',
     styleUrl: 'group-list.component.scss',
-    imports: [MatButton, MatIconButton, RouterLink, MatIcon, MatFormField, MatLabel, MatInput, MatSuffix, FormsModule, CommonModule, MatProgressSpinner, MatCardContent, MatCard]
+    imports: [MatButton, RouterLink, MatIcon, MatFormField, MatLabel, MatInput, MatSuffix, FormsModule, CommonModule, MatProgressSpinner, MatCardContent, MatCard]
 })
 export class GroupListComponent implements OnInit {
-
-    readonly themeService = inject(ThemeService);
 
     groups: Group[] = [];
     filteredGroups: Group[] = [];

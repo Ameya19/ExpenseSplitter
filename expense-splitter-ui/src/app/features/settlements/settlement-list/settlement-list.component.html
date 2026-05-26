@@ -1,0 +1,154 @@
+<div class="page-container">
+
+    <!-- Header -->
+    <div class="page-header">
+        <div>
+            <h1>Settlements</h1>
+            <p>Settle up your debts</p>
+        </div>
+    </div>
+
+    <!-- Group Selector -->
+    <mat-card class="group-selector-card">
+        <mat-card-content>
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Select Group</mat-label>
+                <mat-select [(ngModel)]="selectedGroupId" (ngModelChange)="onGroupChange()">
+                    <mat-option *ngFor="let group of groups">
+                        {{ group.name }}
+                    </mat-option>
+                </mat-select>
+                <mat-icon matSuffix>group</mat-icon>
+            </mat-form-field>
+        </mat-card-content>
+    </mat-card>
+
+    <!-- Settlement Suggestions -->
+    <div class="section" *ngIf="selectedGroupId">
+        <h2>
+            <mat-icon>lightbulb</mat-icon>
+            Suggested Settlements
+        </h2>
+
+        <!-- loading -->
+        <div class="loading-container" *ngIf="isLoadingSuggestions">
+            <mat-spinner diameter="32"></mat-spinner>
+        </div>
+
+        <!-- All Settled -->
+        <mat-card class="settled-card" *ngIf="!isLoadingSuggestions && suggestions.length === 0">
+            <mat-card-content>
+                <mat-icon>check_circle</mat-icon>
+                <p>Everyone is settled up in this group</p>
+            </mat-card-content>
+        </mat-card>
+
+        <!-- Suggestions List -->
+        <div class="suggestions-list" *ngIf="!isLoadingSuggestions && suggestions.length > 0">
+            <mat-card class="settlementCard" *ngFor="let suggestion of suggestions">
+                <mat-card-content>
+                    <div class="suggestion-info">
+                        <div class="user from-user">
+                            <div class="avatar">
+                                {{ suggestion.fromUserName.charAt(0).toUpperCase() }}
+                            </div>
+                            <span>{{ suggestion.fromUserName }}</span>
+                        </div>
+
+                        <!-- Arrow and Amount -->
+                        <div class="transaction">
+                            <span class="amount">
+                                ₹{{ suggestion.amount | number:'1.2-2' }}
+                            </span>
+                            <mat-icon>arrow_forward</mat-icon>
+                        </div>
+
+                        <!-- To User -->
+                        <div class="user to-user">
+                            <div class="avatar">
+                                {{ suggestion.toUserName.charAt(0).toUpperCase() }}
+                            </div>
+                            <span>{{ suggestion.toUserName }}</span>
+                        </div>
+                    </div>
+                        
+                    <!-- Settle Button -->
+                    <button mat-raised-button color="primary" (click)="settleUp(suggestion)" *ngIf="suggestion.fromUserName === currenUserId">
+                        <mat-icon>payments</mat-icon>
+                        Settle Up
+                    </button>
+
+                </mat-card-content>
+            </mat-card>
+        </div>
+    </div>
+
+    <!-- My Settlements History -->
+    <div class="section">
+        <h2>
+            <mat-icon>history</mat-icon>
+            Settlement History
+        </h2>
+
+        <!-- loading -->
+        <div class="loading-container" *ngIf="isLoading">
+            <mat-spinner diameter="32"></mat-spinner>
+        </div>
+
+        <!-- Empty -->
+        <mat-card class="empty-state" *ngIf="!isLoading && settlements.length === 0">
+            <mat-card-content>
+                <mat-icon>receipt_long</mat-icon>
+                <p>No settlement history yet</p>
+            </mat-card-content>
+        </mat-card>
+
+        <!-- Settlements List -->
+        <div class="settlements-list" *ngIf="!isLoading && settlements.length > 0">
+            <mat-card class="settlement-card" *ngFor="let settlement of settlements">
+                <mat-card-content>
+                    
+                    <!-- Status Badge -->
+                    <div class="status-badge" [style.color]="getStatusColor(settlement.status)">
+                        <mat-icon>{{ getStatusIcon(settlement.status) }}</mat-icon>\
+                        {{ settlement.status }}
+                    </div>
+
+                    <!-- Settlement Info -->
+                    <div class="settlement-info">
+                        <div class="users">
+                            <span class="from">{{ settlement.fromUserName }}</span>
+                            <mat-icon>arrow_forward</mat-icon>
+                            <span class="to">{{ settlement.toUserName }}</span>
+                        </div>
+                        <div class="meta">
+                            <span *ngIf="settlement.note">
+                                {{ settlement.note }}
+                            </span>
+                            <span class="date">
+                                {{ settlement.createdAt | date: 'mediumDate' }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Amount -->
+                    <div class="settlement-amount">
+                        ₹{{ settlement.amount | number:'1.2-2' }}
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="settlement-actions" *ngIf="settlement.status === 'Pending'">
+                        <button mat-stroked-button color="primary" (click)="completeSettlement(settlement.id)">
+                            <mat-icon>check</mat-icon>
+                            Complete
+                        </button>
+                        <button mat-stroked-button color="warn" (click)="cancelSettlement(settlement.id)">
+                            <mat-icon>close</mat-icon>
+                            Cancel
+                        </button>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+        </div>
+    </div>
+</div>

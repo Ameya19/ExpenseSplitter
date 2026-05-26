@@ -31,6 +31,12 @@ export const routes: Routes = [
             import('./features/expenses/expenses.routes').then(m => m.expenseRoutes)
     },
     {
+        path: 'settlements',
+        canActivate: [authGuard],
+        loadChildren: () =>
+            import('./features/settlements/settlements.routes').then(m => m.settlementRoutes)
+    },
+    {
         path: '**',
         redirectTo: 'dashboard'
     }
