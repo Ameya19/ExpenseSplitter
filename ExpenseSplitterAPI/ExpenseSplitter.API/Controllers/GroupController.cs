@@ -1,5 +1,6 @@
 ﻿using ExpenseSplitter.Core.DTOs.Group;
 using ExpenseSplitter.Core.Entities;
+using ExpenseSplitter.Core.Enums;
 using ExpenseSplitter.Core.Interfaces.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -57,7 +58,27 @@ namespace ExpenseSplitter.API.Controllers
                     Name = result.Name,
                     Description = result.Description,
                     CreatedByUserId = result.CreatedByUserId,
-                    Id = result.Id
+                    Id = result.Id,
+                    Members = result.Members.Select(m => new GroupMember
+                    {
+                        UserId = m.UserId,
+                        GroupId = m.GroupId,
+                        Role = m.Role,
+                        User = new User
+                        {
+                            Id = m.User.Id,
+                            DisplayName = m.User.DisplayName,
+                            Email = m.User.Email
+                        }
+                    }).ToList(),
+                    Expenses = result.Expenses.Select(e => new Expense
+                    {
+                        Id = e.Id,
+                        Amount = e.Amount,
+                        PaidBy = e.PaidBy,
+                        GroupId = e.GroupId,
+                        CreatedAt = e.CreatedAt
+                    }).ToList()
                 };
 
                 return Ok(response);
@@ -146,7 +167,10 @@ namespace ExpenseSplitter.API.Controllers
             if (!result)
                 return BadRequest("User is already a member of this group.");
 
-            return Ok("Member added successfully.");
+            return Ok(new
+            {
+                message = "Member Added successfully!"
+            });
         }
 
         [HttpDelete("{groupId:Guid}/members/{userId:Guid}")]
@@ -157,7 +181,25 @@ namespace ExpenseSplitter.API.Controllers
             if (!result)
                 return BadRequest("Member not found in this group.");
 
-            return Ok("Member removed successfully.");
+            return Ok(new
+            {
+                message = "Member removed successfully."
+            });
+        }
+
+        [HttpGet("{groupId:Guid}/members/{userId:Guid}/role")]
+        public async Task<IActionResult> GetMemberRole([FromRoute] Guid groupId, [FromRoute] Guid userId)
+        {
+            var member = await this.groupRepository.GetMemberRole(groupId, userId);
+            if (member == null)
+                return NotFound("Member not found in this group.");
+            return Ok(new
+            {
+                member.UserId,
+                member.GroupId,
+                Role = member.Role.ToString(),
+                IsAdmin = member.Role == GroupRole.Admin
+            });
         }
     }
 }

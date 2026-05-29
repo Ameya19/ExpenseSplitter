@@ -1,3 +1,5 @@
+import { User } from "./user.model";
+
 export interface Group {
     id: string;
     name: string;
@@ -16,11 +18,20 @@ export interface GroupMember {
     userId: string;
     displayName: string;
     joinedAt: Date;
-    role: string;
+    role: number;
+    isAdmin: boolean;
+    user: User
 }
 
 export interface CreateGroupRequest {
     name: string;
     description?: string;
     createdByUserId: string;
+}
+
+export interface MemberRole {
+    userId: string;
+    groupId: string
+    role: string;
+    isAdmin: boolean;
 }

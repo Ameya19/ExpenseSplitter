@@ -16,5 +16,6 @@ namespace ExpenseSplitter.Core.Interfaces.Repositories
         public Task<bool> DeleteGroup(Guid groupId);
         public Task<bool> AddMember(Guid groupId, Guid userId);
         public Task<bool> RemoveMember(Guid groupId, Guid userId);
+        public Task<GroupMember?> GetMemberRole(Guid groupId, Guid userId);
     }
 }

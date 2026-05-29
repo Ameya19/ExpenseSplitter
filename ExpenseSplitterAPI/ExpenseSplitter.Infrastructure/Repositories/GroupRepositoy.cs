@@ -22,36 +22,71 @@ namespace ExpenseSplitter.Infrastructure.Repositories
 
         public async Task<bool> AddMember(Guid groupId, Guid userId)
         {
-            //Check if member exists.
-            var checkIfAlreadyExists = await this.appDbContext.GroupMembers.AnyAsync(m => m.GroupId == groupId && m.UserId == userId);
+            try
+            {
+                // Check if member exists
+                var existingMember = await this.appDbContext.GroupMembers
+                    .IgnoreQueryFilters()
+                    .FirstOrDefaultAsync(m => m.GroupId == groupId && m.UserId == userId);
 
-            if (checkIfAlreadyExists)
+                if (existingMember != null && !existingMember.IsDeleted)
+                {
+                    return false; // Already exists and not deleted
+                }
+
+                else
+                {
+                    // Create new member
+                    var member = new GroupMember
+                    {
+                        Id = Guid.NewGuid(),
+                        GroupId = groupId,
+                        UserId = userId,
+                        Role = Core.Enums.GroupRole.Member,
+                        JoinedAt = DateTime.UtcNow,
+                        InviteStatus = Core.Enums.InviteStatus.Pending,
+                        IsDeleted = false,
+                        CreatedAt = DateTime.UtcNow,
+                        UpdatedAt = DateTime.UtcNow
+                    };
+
+                    this.appDbContext.GroupMembers.Add(member);
+                }
+
+                var result = await this.appDbContext.SaveChangesAsync();
+                return result > 0;
+            }
+            catch (Exception ex)
             {
                 return false;
             }
-
-            var member = new GroupMember
-            {
-                GroupId = groupId,
-                UserId = userId,
-                Role = Core.Enums.GroupRole.Member,
-                JoinedAt = DateTime.UtcNow
-            };
-
-            await appDbContext.GroupMembers.AddAsync(member);
-            return true;
         }
 
         public async Task<Group> CreateGroup(Group group)
         {
             this.appDbContext.Groups.Add(group);
+
+            var adminMember = new GroupMember
+            {
+                Id = Guid.NewGuid(),
+                GroupId = group.Id,
+                UserId = group.CreatedByUserId,
+                Role = Core.Enums.GroupRole.Admin,
+                JoinedAt = DateTime.UtcNow,
+                InviteStatus = Core.Enums.InviteStatus.Pending,
+                IsDeleted = false,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+
+            this.appDbContext.GroupMembers.Add(adminMember);
             await this.appDbContext.SaveChangesAsync();
             return group;
         }
 
         public async Task<bool> DeleteGroup(Guid groupId)
         {
-            var groupDetails = await this.appDbContext.Groups.FirstOrDefaultAsync(x => x.Id ==  groupId);
+            var groupDetails = await this.appDbContext.Groups.FirstOrDefaultAsync(x => x.Id == groupId);
 
             if (groupDetails != null)
             {
@@ -69,12 +104,21 @@ namespace ExpenseSplitter.Infrastructure.Repositories
 
         public async Task<Group?> GetGroupById(Guid id)
         {
-            return await this.appDbContext.Groups.FirstOrDefaultAsync(x => x.Id == id);
+
+            return await this.appDbContext.Groups
+                .Include(m => m.Members)
+                .ThenInclude(gm => gm.User)
+                .Include(e => e.Expenses)
+                .FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task<IEnumerable<Group>> GetGroupsByUserId(Guid userId)
         {
-            return await this.appDbContext.Groups.Where(x => x.CreatedByUserId == userId).ToListAsync();
+            return await this.appDbContext.Groups
+                .Include(m => m.Members)
+                .ThenInclude(gm => gm.User)
+                .Include(e => e.Expenses)
+                .Where(x => x.CreatedByUserId == userId).ToListAsync();
         }
 
         public async Task<bool> RemoveMember(Guid groupId, Guid userId)
@@ -93,7 +137,7 @@ namespace ExpenseSplitter.Infrastructure.Repositories
 
         public async Task<Group?> UpdateGroupDetails(Guid groupId, Group updatedGroupDetails)
         {
-            var groupDetails = await this.appDbContext.Groups.FirstOrDefaultAsync(x =>x.Id == groupId);
+            var groupDetails = await this.appDbContext.Groups.FirstOrDefaultAsync(x => x.Id == groupId);
 
             if (groupDetails != null)
             {
@@ -107,6 +151,11 @@ namespace ExpenseSplitter.Infrastructure.Repositories
             {
                 return null;
             }
+        }
+
+        public async Task<GroupMember?> GetMemberRole(Guid groupId, Guid userId)
+        {
+            return await this.appDbContext.GroupMembers.FirstOrDefaultAsync(m => m.GroupId == groupId && m.UserId == userId && m.IsDeleted == false);
         }
     }
 }

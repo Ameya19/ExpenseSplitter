@@ -11,14 +11,19 @@ import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { CommonModule } from '@angular/common';
 import { MatIcon } from "@angular/material/icon";
 import { MatButton } from "@angular/material/button";
-import { MatCard } from "@angular/material/card";
+import { MatCard, MatCardHeader, MatCardTitle, MatCardContent } from "@angular/material/card";
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { UserService } from '../../../core/services/user.service';
+import { MatFormField, MatLabel, MatSuffix } from "@angular/material/form-field";
+import { MatInput } from "@angular/material/input";
+import { FormsModule } from '@angular/forms';
 
 @Component({
     selector: 'app-group-detail',
     templateUrl: 'group-detail.component.html',
     styleUrl: 'group-detail.component.scss',
-    imports: [MatProgressSpinner, CommonModule, MatIcon, RouterLink, MatButton, MatCard, MatTabsModule]
+    imports: [MatProgressSpinner, CommonModule, MatIcon, RouterLink, MatButton, MatCard, MatTabsModule, MatSnackBarModule, MatCardHeader, MatCardTitle, MatCardContent, MatFormField, MatLabel, MatInput, MatSuffix, FormsModule]
 })
 export class GroupDetailComponent implements OnInit{
     group: GroupDetail | null = null;
@@ -26,19 +31,43 @@ export class GroupDetailComponent implements OnInit{
     balances: Balance[] = [];
     suggestions: SettlementSuggestion[] = [];
     isLoading = false;
-    groupId = ''
+    groupId = '';
+    isCurrentUserAdmin = false;
+
+    memberEmail = '';
+    isAddingMember = false;
+    addMemberError = "";
+    addMemberSuccess = "";
 
     constructor(private router:Router,
         private route: ActivatedRoute,
         private groupService: GroupService,
         private expenseService: ExpenseService,
         private balanceService: BalanceService,
-        private authService: AuthService
+        private authService: AuthService,
+        private userService: UserService,
+        private snackBar: MatSnackBar
     ) {}
 
     ngOnInit(): void {
         this.groupId = this.route.snapshot.paramMap.get('id')!;
         this.loadGroupData();
+        this.checkAdminStatus();
+    }
+
+    checkAdminStatus(): void {
+        const currentUserId = this.authService.getCurrentUser()?.id || '';
+        if(!currentUserId)
+            return;
+
+        this.groupService.getMemberRole(currentUserId, this.groupId).subscribe({
+            next: (role) => {
+                this.isCurrentUserAdmin = role.isAdmin;
+            },
+            error: () => {
+                this.isCurrentUserAdmin = false;
+            }
+        });
     }
 
     loadGroupData(): void {
@@ -91,6 +120,52 @@ export class GroupDetailComponent implements OnInit{
         });
     }
 
+    addMember(): void {
+        if(!this.memberEmail.trim())
+            return;
+
+        this.isAddingMember = true;
+        this.addMemberSuccess = "";
+        this.addMemberError = "";
+
+        this.userService.getUserByEmail(this.memberEmail).subscribe({
+            next: (user) => {
+                this.groupService.addMember(user.id, this.groupId).subscribe({
+                    next: () => {
+                        this.isAddingMember = false;
+                        this.memberEmail = '';
+                        this.addMemberSuccess = `${user.displayName} added successfully!`;
+                        this.loadGroupData();
+
+                        this.snackBar.open(`${user.displayName} added to the group!`, 'Close', {duration: 3000});
+                    },
+                    error: (err) => {
+                        this.isAddingMember = false;
+                        this.addMemberError = err.error?.message || `${user.displayName} already exists in group.`
+                    }
+                });
+            },
+            error: () => {
+                this.isAddingMember = false;
+                this.addMemberError = 'No User found with this email address.';
+            }
+        });
+    }
+
+    removeMember(userId: string, displayName: string): void {
+        if(!confirm(`Remove ${displayName} from group?`)) return;
+
+        this.groupService.removeMember(userId, this.groupId).subscribe({
+            next: ()=> {
+                this.loadGroupData();
+                this.snackBar.open(`${displayName} removed from group.`, 'Close', { duration: 3000 });
+            },
+            error: () => {
+                this.snackBar.open("Failed to remove the member", 'Close', { duration: 3000 });
+            }
+        });
+    }
+
     getCategoryIcon(category: number) {
         const icons: Record<number, string> = {
             1: 'restaurant', 2: 'flight', 3: 'home',
@@ -116,6 +191,14 @@ export class GroupDetailComponent implements OnInit{
     }
 
     getCurrentUserId(): string {
+        return this.authService.getCurrentUser()?.id || '';
+    }
+
+    isAdmin(): boolean {
+        return this.isCurrentUserAdmin;
+    }
+
+    get currentUserId(): string {
         return this.authService.getCurrentUser()?.id || '';
     }
 }

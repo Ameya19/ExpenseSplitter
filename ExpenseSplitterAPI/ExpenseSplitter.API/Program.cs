@@ -5,7 +5,6 @@ using ExpenseSplitter.Infrastructure.Auth;
 using ExpenseSplitter.Infrastructure.Data;
 using ExpenseSplitter.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;

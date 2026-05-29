@@ -71,17 +71,102 @@
             <!-- Members Tab -->
             <mat-tab label="Members">
                 <div class="tab-content">
+            
+                <!-- Add Member Section -->
+                <mat-card class="add-member-card" *ngIf="isAdmin()">
+                    <mat-card-header>
+                    <mat-card-title>
+                        <mat-icon>person_add</mat-icon>
+                        Add Member
+                    </mat-card-title>
+                    </mat-card-header>
+                    <mat-card-content>
+                    <div class="add-member-form">
+            
+                        <mat-form-field appearance="outline" class="email-field">
+                        <mat-label>Email Address</mat-label>
+                        <input matInput
+                                type="email"
+                                [(ngModel)]="memberEmail"
+                                placeholder="Enter member's email"
+                                (keyup.enter)="addMember()">
+                        <mat-icon matSuffix>email</mat-icon>
+                        </mat-form-field>
+            
+                        <button mat-raised-button
+                                color="primary"
+                                (click)="addMember()"
+                                [disabled]="isAddingMember || !memberEmail.trim()">
+                        <mat-spinner diameter="18"
+                                    *ngIf="isAddingMember">
+                        </mat-spinner>
+                        <mat-icon *ngIf="!isAddingMember">
+                            person_add
+                        </mat-icon>
+                        <span *ngIf="!isAddingMember">Add</span>
+                        </button>
+            
+                    </div>
+            
+                    <!-- Success Message -->
+                    <div class="success-message" *ngIf="addMemberSuccess">
+                        <mat-icon>check_circle</mat-icon>
+                        {{ addMemberSuccess }}
+                    </div>
+            
+                    <!-- Error Message -->
+                    <div class="error-message" *ngIf="addMemberError">
+                        <mat-icon>error</mat-icon>
+                        {{ addMemberError }}
+                    </div>
+            
+                    </mat-card-content>
+                </mat-card>
+            
+                <!-- Members List -->
+                <mat-card class="members-card">
+                    <mat-card-header>
+                    <mat-card-title>
+                        <mat-icon>people</mat-icon>
+                        Members ({{ group.members.length }})
+                    </mat-card-title>
+                    </mat-card-header>
+                    <mat-card-content>
                     <div class="member-list">
-                        <div class="member-item" *ngFor="let member of group.members">
-                            <div class="member-avatar">
-                                {{ member.displayName.charAt(0).toUpperCase() }}
-                            </div>
-                            <div class="member-info">
-                                <h3>{{ member.displayName }}</h3>
-                                <p>{{ member.role }}</p>
+                        <div class="member-item"
+                            *ngFor="let member of group.members">
+                        <!-- Avatar -->
+                        <div class="member-avatar">
+                            {{ member.user.displayName.charAt(0).toUpperCase() }}
+                        </div>
+            
+                        <!-- Info -->
+                        <div class="member-info">
+                            <h3>{{ member.user.displayName }}</h3>
+                            <div class="member-meta">
+                            <span class="role-badge"
+                                    [class.admin]="member.role === 1">
+                                {{ member.role === 1 ? "Admin" : "Member" }}
+                            </span>
+                            <span class="joined">
+                                Joined {{ member.joinedAt | date:'mediumDate' }}
+                            </span>
                             </div>
                         </div>
+            
+                        <!-- Remove Button (admin only, not self) -->
+                        <button mat-icon-button
+                                color="warn"
+                                *ngIf="isAdmin() && member.userId !== currentUserId"
+                                (click)="removeMember(member.userId, member.user.displayName)">
+                            <mat-icon>person_remove</mat-icon>
+                        </button>
+            
+                        </div>
                     </div>
+                    </mat-card-content>
+                </mat-card>
+            
                 </div>
             </mat-tab>
 
