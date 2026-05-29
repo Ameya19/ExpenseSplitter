@@ -1,0 +1,264 @@
+.page-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px;
+  }
+  
+  .page-header {
+    margin-bottom: 24px;
+    h1 { font-size: 28px; font-weight: 600; margin: 0; }
+    p { color: #666; margin: 4px 0 0; }
+  }
+  
+  .tab-content {
+    padding: 24px 0;
+  }
+  
+  // Filters
+  .filters {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  
+    mat-form-field { min-width: 180px; }
+  }
+  
+  .loading-container {
+    display: flex;
+    justify-content: center;
+    padding: 60px;
+  }
+  
+  // Summary Cards
+  .summary-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  .summary-card {
+    mat-card-content {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 20px;
+    }
+  
+    .card-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+  
+      mat-icon { color: white; font-size: 26px; width: 26px; height: 26px; }
+    }
+  
+    .card-info {
+      h2 { font-size: 24px; font-weight: 700; margin: 0; }
+      p { margin: 4px 0 0; color: #666; font-size: 13px; }
+    }
+  }
+  
+  // Report Grid
+  .report-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  .report-card {
+    mat-card-header {
+      padding: 16px 16px 0;
+  
+      mat-card-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 16px;
+      }
+    }
+  
+    mat-card-content { padding: 16px; }
+  
+    &.full-width {
+      grid-column: 1 / -1;
+    }
+  }
+  
+  // Category List
+  .category-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .category-item {
+    .category-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+  
+    .category-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+  
+      .cat-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+  
+        mat-icon { font-size: 18px; width: 18px; height: 18px; }
+      }
+  
+      span { font-size: 14px; font-weight: 500; }
+    }
+  
+    .category-stats {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+  
+      .amount { font-weight: 600; font-size: 14px; }
+      .percentage { color: #888; font-size: 13px; }
+    }
+  }
+  
+  .progress-bar {
+    height: 6px;
+    background: #f0f0f0;
+    border-radius: 3px;
+    overflow: hidden;
+  
+    .progress-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.5s ease;
+    }
+  }
+  
+  // Member List
+  .member-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  
+    .member-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid #f0f0f0;
+      &:last-child { border-bottom: none; }
+    }
+  
+    .member-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #3f51b5;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+  
+    .member-info {
+      flex: 1;
+      h3 { margin: 0; font-size: 14px; font-weight: 600; }
+      p { margin: 2px 0 0; font-size: 12px; color: #888; }
+    }
+  
+    .member-balance {
+      font-weight: 700;
+      font-size: 15px;
+    }
+  }
+  
+  // Monthly List
+  .monthly-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  
+    .monthly-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background: #f8f9ff;
+      border-radius: 8px;
+  
+      .month-info {
+        h3 { margin: 0; font-size: 15px; font-weight: 600; }
+        p { margin: 2px 0 0; font-size: 12px; color: #888; }
+      }
+  
+      .month-amount {
+        font-weight: 700;
+        font-size: 16px;
+        color: #333;
+      }
+    }
+  }
+  
+  // Group Summary
+  .group-summary-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  
+    .group-summary-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid #f0f0f0;
+      &:last-child { border-bottom: none; }
+    }
+  
+    .group-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: #3f51b5;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+  
+    .group-info {
+      flex: 1;
+      h3 { margin: 0; font-size: 14px; font-weight: 600; }
+      p { margin: 2px 0 0; font-size: 12px; color: #888; }
+    }
+  
+    .group-balance {
+      font-weight: 700;
+      font-size: 15px;
+    }
+  }

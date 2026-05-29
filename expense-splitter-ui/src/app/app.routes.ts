@@ -37,6 +37,12 @@ export const routes: Routes = [
             import('./features/settlements/settlements.routes').then(m => m.settlementRoutes)
     },
     {
+        path: 'reports',
+        canActivate: [authGuard],
+        loadChildren: () => 
+            import('./features/reports/reports.routes').then(m => m.reportRoutes)
+    },
+    {
         path: '**',
         redirectTo: 'dashboard'
     }

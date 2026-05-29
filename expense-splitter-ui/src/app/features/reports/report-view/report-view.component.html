@@ -1,0 +1,312 @@
+<div class="page-container">
+
+    <!-- Header -->
+    <div class="page-header">
+        <div>
+            <h1>Reports</h1>
+            <p>Analyze your spending</p>
+        </div>
+    </div>
+
+    <mat-tab-group>
+
+        <!-- Group Report Tab -->
+        <mat-tab label="Group Report">
+            <div class="tab-content">
+
+                <!-- Group Selector -->
+                <div class="filters">
+                    <mat-form-field appearance="outline">
+                        <mat-label>Select Group</mat-label>
+                        <mat-select [(ngModel)]="selectedGroupId" (ngModelChange)="onGroupChange()">
+                            <mat-option *ngFor="let group of groups" [value]="group.id">
+                                {{ group.name }}
+                            </mat-option>
+                        </mat-select>
+                        <mat-icon matSuffix>group</mat-icon>
+                    </mat-form-field>
+
+                    <!-- Date Range -->
+                    <mat-form-field appearance="outline">
+                        <mat-label>From Date</mat-label>
+                        <input matInput [matDatepicker]="fromPicker" [(ngModel)]="fromDate">
+                        <mat-datepicker-toggle matSuffix [for]="fromPicker"></mat-datepicker-toggle>
+                        <mat-datepicker #fromPicker></mat-datepicker>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>To Date</mat-label>
+                        <input matInput [matDatepicker]="toPicker" [(ngModel)]="toDate">
+                        <mat-datepicker-toggle matSuffix [for]="toPicker"></mat-datepicker-toggle>
+                        <mat-datepicker #toPicker></mat-datepicker>
+                    </mat-form-field>
+
+                    <button mat-raised-button color="primary" (click)="loadGroupReportByDateRange()">
+                        <mat-icon>filter_list</mat-icon>
+                        Apply Filter
+                    </button>
+                </div>
+
+                <!-- Loading -->
+                <div class="loading-container" *ngIf="isLoadingGroupReports">
+                    <mat-spinner diameter="40"></mat-spinner>
+                </div>
+
+                <ng-container *ngIf="!isLoadingGroupReports && groupReport">
+
+                    <!-- Summary Cards -->
+                    <div class="summary-cards">
+                        <mat-card class="summary-card">
+                            <mat-card-content>
+                                <div class="card-icon" style="background: #3f51b5;">
+                                    <mat-icon>receipt_long</mat-icon>
+                                </div>
+                                <div class="card-info">
+                                    <h2>₹{{ groupReport.totalExpenses | number:'1.2-2' }}</h2>
+                                    <p>Total Spent</p>
+                                </div>
+                            </mat-card-content>
+                        </mat-card>
+
+                        <mat-card class="summary-card">
+                            <mat-card-content>
+                                <div class="card-icon" style="background: #4caf50;">
+                                    <mat-icon>tag</mat-icon>
+                                </div>
+                                <div class="card-info">
+                                    <h2>{{ groupReport.totalTransactions }}</h2>
+                                    <p>Transactions</p>
+                                </div>
+                            </mat-card-content>
+                        </mat-card>
+
+                        <mat-card class="summary-card">
+                            <mat-card-content>
+                                <div class="card-icon" style="background: ff9800;">
+                                    <mat-icon>people</mat-icon>
+                                </div>
+                                <div class="card-info">
+                                    <h2>{{ groupReport.memberSpending.length }}</h2>
+                                    <p>Members</p>
+                                </div>
+                            </mat-card-content>
+                        </mat-card>
+                    </div>
+
+                    <div class="report-grid">
+
+                        <!-- Category Breakdown -->
+                        <mat-card class="report-card">
+                            <mat-card-header>
+                                <mat-card-title>
+                                    <mat-icon>pie_chart</mat-icon>
+                                    Category Breakdown
+                                </mat-card-title>
+                            </mat-card-header>
+                            <mat-card-content>
+                                <div class="category-list">
+                                    <div class="category-item" *ngFor="let cat of groupReport.categoryBreakdown">
+                                        <div class="category-header">
+                                            <div class="category-label">
+                                                <div class="cat-icon" [style.background]="getCategoryColor(cat.category) + '20'">
+                                                    <mat-icon [style.color]="getCategoryColor(cat.category)">{{ getCategoryIcon(cat.category) }}</mat-icon>
+                                                </div>
+                                                <span>{{ cat.category }}</span>
+                                            </div>
+                                            <div class="category-stats">
+                                                <span class="amount">
+                                                    ₹{{ cat.totalAmount | number:'1.2-2' }}
+                                                </span>
+                                                <span class="percentage">
+                                                    {{ cat.percentage }}%
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Progress Bar -->
+                                        <div class="progress-bar">
+                                            <div class="progress-fill" [style.width]="getProgressWidth(cat.percentage)" [style.background]="getCategoryColor(cat.category)"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </mat-card-content>
+                        </mat-card>
+
+                        <!-- Member Spending -->
+                        <mat-card class="report-card">
+                            <mat-card-header>
+                                <mat-card-title>
+                                    <mat-icon>people</mat-icon>
+                                    Member Spending
+                                </mat-card-title>
+                            </mat-card-header>
+                            <mat-card-content>
+                                <div class="member-list">
+                                    <div class="member-item" *ngFor="let member of groupReport.memberSpending">
+                                        <div class="member-avatar">
+                                            {{ member.displayName.charAt(0).toUpperCase() }}
+                                        </div>
+                                        <div class="member-info">
+                                            <h3>{{ member.displayName }}</h3>
+                                            <p>Paid: ₹{{ member.totalPaid | number:'1.2-2' }}</p>
+                                        </div>
+                                        <div class="member-balance" [style.color]="getBalanceColor(member.netBalance)">
+                                            {{ member.netBalance > 0 ? '+' : '' }}
+                                            ₹{{ member.netBalance | number:'1.2-2' }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </mat-card-content>
+                        </mat-card>
+
+                        <!-- Monthly Breakdown -->
+                        <mat-card class="report-card full-width">
+                            <mat-card-header>
+                                <mat-card-title>
+                                    <mat-icon>calender_month</mat-icon>
+                                    Monthly Breakdown
+                                </mat-card-title>
+                            </mat-card-header>
+                            <mat-card-content>
+                                <div class="monthly-list">
+                                    <div class="monthly-item" *ngFor="let month of groupReport.monthlyBreakdown">
+                                        <div class="month-info">
+                                            <h3>{{ month.monthName }}</h3>
+                                            <p>{{ month.totalTransactions }} transactions</p>
+                                        </div>
+                                        <div class="month-amount">
+                                            ₹{{ month.totalAmount | number:'1.2-2' }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </mat-card-content>
+                        </mat-card>
+                    </div>
+                </ng-container>
+            </div>
+        </mat-tab>
+        
+        <!-- Personal Report -->
+        <mat-tab label="My Report">
+            <div class="tab-content">
+
+                <!-- Loading -->
+                <div class="loading-container" *ngIf="isLoadingUserReports">
+                    <mat-spinner diameter="40"></mat-spinner>
+                </div>
+
+                <ng-container *ngIf="isLoadingUserReports &&  userReport">
+
+                    <!-- Summary cards -->
+                    <div class="summary-cards">
+                        <mat-card class="summary-card">
+                            <mat-card-content>
+                                <div class="card-icon" style="background: #4caf50;">
+                                    <mat-icon>arrow-upward</mat-icon>
+                                </div>
+                                <div class="card-info">
+                                    <h2>₹{{ userReport.totalPaidAcrossGroups | number:'1.2-2' }}</h2>
+                                    <p>Total Paid</p>
+                                </div>
+                            </mat-card-content>
+                        </mat-card>
+
+                        <mat-card class="summary-card">
+                            <mat-card-content>
+                                <div class="card-icon" style="background: #f44336;">
+                                    <mat-icon>arrow-downward</mat-icon>
+                                </div>
+                                <div class="card-info">
+                                    <h2>{{ userReport.totalOwedAcrossGroups | number: '1.2-2'}}</h2>
+                                    <p>Total Owed</p>
+                                </div>
+                            </mat-card-content>
+                        </mat-card>
+
+                        <mat-card class="summary-card">
+                            <mat-card-content>
+                                <div class="card-icon" [style.background]="getBalanceColor(userReport.netBalanceAcrossGroups)">
+                                    <mat-icon>account_balance</mat-icon>
+                                </div>
+                                <div class="card-info">
+                                    <h2 [style.color]="getBalanceColor(userReport.netBalanceAcrossGroups)">
+                                        {{ userReport.netBalanceAcrossGroups > 0 ? '+' : '' }}
+                                        ₹{{ userReport.netBalanceAcrossGroups | number:'1.2-2' }}
+                                    </h2>
+                                    <p>Net Balance</p>
+                                </div>
+                            </mat-card-content>
+                        </mat-card>
+                    </div>
+
+                    <div class="report-grid">
+
+                        <!-- Group Summaries -->
+                        <mat-card class="report-card">
+                            <mat-card-header>
+                                <mat-card-title>
+                                    <mat-icon>group</mat-icon>
+                                    Group Summaries
+                                </mat-card-title>
+                            </mat-card-header>
+                            <mat-card-content>
+                                <div class="group-summary-list">
+                                    <div class="group summary-item" *ngFor="let g of userReport.groupSummerise">
+                                        <div class="group-avatar">
+                                            {{ g.groupName.charAt(0).toUpperCase() }}
+                                        </div>
+                                        <div class="group-info">
+                                            <h3>{{ g.groupName }}</h3>
+                                            <p>Paid: ₹{{ g.totalPaid | number:'1.2-2' }}</p>
+                                        </div>
+                                        <div class="group-balance" [style.color]="getBalanceColor(g.netBalance)">
+                                            {{ g.netBalance > 0 ? '+' : '' }}
+                                            ₹{{ g.netBalance | number:'1.2-2' }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </mat-card-content>
+                        </mat-card>
+
+                        <!-- Personal Category Breakdown -->
+                        <mat-card class="report-card">
+                            <mat-card-header>
+                                <mat-card-title>
+                                    <mat-icon>pie_chart</mat-icon>
+                                    My Spending by Category
+                                </mat-card-title>
+                            </mat-card-header>
+                            <mat-card-content>
+                                <div class="category-list">
+                                    <div class="category-item" *ngFor="let cat of userReport.categoryBreakDown">
+                                        <div class="category-header">
+                                            <div class="category-label">
+                                                <div class="cat-icon" [style.background]="getCategoryColor(cat.category) + '20'">
+                                                    <mat-icon [style.color]="getCategoryColor(cat.category)">
+                                                        {{ getCategoryIcon(cat.category) }}
+                                                    </mat-icon>
+                                                </div>
+                                                <span>{{ cat.category }}</span>
+                                            </div>
+                                            <div class="category-stats">
+                                                <span class="amount">
+                                                    ₹{{ cat.totalAmount | number:'1.2-2' }}
+                                                </span>
+                                                <span class="percentage">
+                                                    {{ cat.percentage }}%
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="progress-bar">
+                                            <div class="progress-fill" [style.width]="getProgressWidth(cat.percentage)" [style.background]="getCategoryColor(cat.category)"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </mat-card-content>
+                        </mat-card>
+                    </div>
+                </ng-container>
+            </div>
+        </mat-tab>
+    </mat-tab-group>
+</div>
