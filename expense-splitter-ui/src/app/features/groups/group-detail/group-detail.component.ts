@@ -1,6 +1,6 @@
 import { BalanceService } from './../../../core/services/balance.service';
 import { GroupService } from './../../../core/services/group.service';
-import { ActivatedRoute, Router, RouterLink, ɵEmptyOutletComponent } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Component, OnInit } from "@angular/core";
 import { GroupDetail } from "../../../core/models/group.model";
 import { Expense } from "../../../core/models/expense.model";

@@ -1,113 +1,228 @@
 <div class="page-container">
 
-    <!-- Header -->
     <div class="page-header">
-        <button mat-icon-button (click)="goBack()">
-            <mat-icon>arrow_back</mat-icon>
-        </button>
-        <h1>{{ isEditMode ? "Edit Expense" : "Create Expense" }}</h1>
+      <button mat-icon-button (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h1>{{ isEditMode ? 'Edit Expense' : 'Add Expense' }}</h1>
     </div>
-    
+  
     <mat-card class="form-card">
-        <mat-card-content>
-            <form [formGroup]="expenseForm" (ngSubmit)="onSubmit()">
-
-                <!-- Title -->
-                <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>Title</mat-label>
-                    <div class="field-details">
-                        <input matInput placeholder="Enter title for expense" formControlName="title">
-                        <mat-icon>receipt</mat-icon>
+      <mat-card-content>
+        <form [formGroup]="expenseForm" (ngSubmit)="onSubmit()">
+  
+          <!-- Title -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Title</mat-label>
+            <input matInput formControlName="title"
+                   placeholder="e.g. Hotel Bill">
+            <mat-icon matSuffix>receipt</mat-icon>
+            <mat-error *ngIf="title?.hasError('required')">
+              Title is required
+            </mat-error>
+          </mat-form-field>
+  
+          <!-- Amount -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Amount (₹)</mat-label>
+            <input matInput type="number"
+                   formControlName="amount" placeholder="0.00">
+            <mat-icon matSuffix>currency_rupee</mat-icon>
+            <mat-error *ngIf="amount?.hasError('required')">
+              Amount is required
+            </mat-error>
+            <mat-error *ngIf="amount?.hasError('min')">
+              Amount must be greater than 0
+            </mat-error>
+          </mat-form-field>
+  
+          <!-- Category -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Category</mat-label>
+            <mat-select formControlName="category">
+              <mat-option *ngFor="let cat of categories"
+                          [value]="cat.value">
+                {{ cat.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+  
+          <!-- Split Type -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Split Type</mat-label>
+            <mat-select formControlName="splitType">
+              <mat-option *ngFor="let split of splitType"
+                          [value]="split.value">
+                {{ split.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+  
+          <!-- Date -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Date</mat-label>
+            <input matInput [matDatepicker]="picker"
+                   formControlName="date">
+            <mat-datepicker-toggle matSuffix [for]="picker">
+            </mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+  
+          <!-- Group Dropdown -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Group</mat-label>
+            <mat-select formControlName="groupId"
+                        (ngModelChange)="onGroupChange()">
+              <mat-option *ngIf="isGroupsLoading" disabled>
+                Loading groups...
+              </mat-option>
+              <mat-option *ngFor="let group of groups"
+                          [value]="group.id">
+                {{ group.name }}
+              </mat-option>
+            </mat-select>
+            <mat-icon matSuffix>group</mat-icon>
+            <mat-error>Please select a group</mat-error>
+          </mat-form-field>
+  
+          <mat-divider></mat-divider>
+  
+          <!-- ✅ Split Members Section -->
+          <div class="split-section">
+            <h3 class="split-title">
+              <mat-icon>people</mat-icon>
+              Split With Members
+            </h3>
+  
+            <!-- Loading Members -->
+            <div class="members-loading" *ngIf="isLoadingMembers">
+              <mat-spinner diameter="24"></mat-spinner>
+              <span>Loading members...</span>
+            </div>
+  
+            <!-- No Group Selected -->
+            <div class="no-group"
+                 *ngIf="!isLoadingMembers && groupMembers.length === 0">
+              <mat-icon>info</mat-icon>
+              <span>Select a group to see members</span>
+            </div>
+  
+            <!-- Members List -->
+            <div class="members-list"
+                 *ngIf="!isLoadingMembers && groupMembers.length > 0">
+  
+              <!-- Member Checkboxes -->
+              <div class="member-split-item"
+                   *ngFor="let member of groupMembers">
+  
+                <!-- Checkbox + Name -->
+                <mat-checkbox
+                  [checked]="selectedMemberIds.includes(member.userId)"
+                  (change)="toggleMember(member.userId, $event.checked)">
+                  <div class="member-label">
+                    <div class="member-avatar">
+                      {{ member.user.displayName.charAt(0).toUpperCase() || '?' }}
                     </div>
-                    <mat-error *ngIf="title?.hasError('required')">
-                        Title is required
-                    </mat-error> 
-                </mat-form-field>
-
-                <!-- Amount -->
-                <mat-form-field appearance="outline" class="full-width amount-field">
-                    <mat-label>Amount (₹)</mat-label>
-                    <input matInput placeholder="0.00" formControlName="amount">
-                    <mat-error *ngIf="amount?.hasError('required')">
-                        Amount is required
-                    </mat-error>
-                    <mat-error *ngIf="amount?.hasError('min')">
-                        Amount must be greater than 0.
-                    </mat-error>
-                </mat-form-field>
-
-                <!-- Category -->
-                <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>Category</mat-label>
-                    <mat-select formControlName="category">
-                        <mat-option *ngFor="let cat of categories" [value]="cat.value">
-                            {{ cat.label }}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-
-                <!-- Split Type -->
-                <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>Split Type</mat-label>
-                    <mat-select formControlName="splitType">
-                        <mat-option *ngFor="let split of splitType" [value]="split.value">
-                            {{ split.label }}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-
-                <!-- Date -->
-                <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>Date</mat-label>
-                    <input matInput [matDatepicker]="picker" formControlName="date">
-                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                    <mat-datepicker #picker></mat-datepicker>
-                </mat-form-field>
-
-                <!-- Group ID -->
-                <mat-form-field appearance="outline" class="full-width" *ngIf="!groupId">
-                    <mat-label>Group ID</mat-label>
-                    <mat-select formControlName="groupId">
-
-                        <mat-option *ngIf="isGroupsLoading" disabled>
-                            Loading groups...
-                        </mat-option>
-
-                        <mat-option *ngFor="let group of groups" [value]="group.id">
-                            <div class="group-option">
-                                <span>{{ group.name }}</span>
-                            </div>
-                        </mat-option>
-
-                        <!-- No groups state -->
-                        <mat-option *ngIf="!isGroupsLoading && groups.length === 0" disabled>
-                            No groups found — create one first
-                        </mat-option>
-                    </mat-select>
-                    <mat-error *ngIf="groupIdControl?.hasError('required')">
-                        Group ID is required
-                    </mat-error>
-                </mat-form-field>
-
-                <!-- Error -->
-                <div class="error-message" *ngIf="errorMessage">
-                    <mat-icon>error</mat-icon>
-                    {{ errorMessage }}
+                    <span>{{ member.user.displayName || 'Unknown'}}</span>
+                  </div>
+                </mat-checkbox>
+  
+                <!-- Equal Split — show share -->
+                <div class="split-value"
+                     *ngIf="currentSplitType === 1 &&
+                            selectedMemberIds.includes(member.userId)">
+                  ₹{{ getEqualShare() | number:'1.2-2' }}
                 </div>
-
-                <!-- Actions -->
-                <div class="form-actions">
-                    <button mat-stroked-button type="button" (click)="goBack()">
-                        Cancel
-                    </button>
-                    <button mat-raised-button type="submit" [disabled]="isLoading || expenseForm.invalid">
-                        <mat-spinner diameter="20" *ngIf="isLoading"></mat-spinner>
-                        <span *ngIf="!isLoading">
-                            {{ isEditMode ? "Update" : "Add Expense" }}
-                        </span>
-                    </button>
+  
+                <!-- Percentage Split — input -->
+                <mat-form-field appearance="outline" class="split-input full-width"
+                  *ngIf="currentSplitType === 2 &&
+                         selectedMemberIds.includes(member.userId)">
+                  <input matInput type="number"
+                         [(ngModel)]="percentages[member.userId]"
+                         [ngModelOptions]="{standalone: true}"
+                         placeholder="0"
+                         min="0" max="100">
+                  <span matSuffix>%</span>
+                </mat-form-field>
+  
+                <!-- Exact Split — input -->
+                <mat-form-field appearance="outline" class="split-input full-width"
+                  *ngIf="currentSplitType === 3 &&
+                         selectedMemberIds.includes(member.userId)">
+                  <span matPrefix>₹</span>
+                  <input matInput type="number"
+                         [(ngModel)]="exactAmounts[member.userId]"
+                         [ngModelOptions]="{standalone: true}"
+                         placeholder="0.00"
+                         min="0">
+                </mat-form-field>
+  
+              </div>
+  
+              <!-- Split Summary -->
+              <div class="split-summary">
+  
+                <!-- Equal Summary -->
+                <div class="summary-row" *ngIf="currentSplitType === 1">
+                  <span>Each person pays</span>
+                  <strong>₹{{ getEqualShare() | number:'1.2-2' }}</strong>
                 </div>
-            </form>
-        </mat-card-content>
+  
+                <!-- Percentage Summary -->
+                <div class="summary-row percentage-summary"
+                     *ngIf="currentSplitType === 2">
+                  <span>Total percentage</span>
+                  <strong [class.valid]="getTotalPercentages() === 100"
+                          [class.invalid]="getTotalPercentages() !== 100">
+                    {{ getTotalPercentages() }}%
+                    {{ getTotalPercentages() === 100 ? '✅' : '(must be 100%)' }}
+                  </strong>
+                </div>
+  
+                <!-- Exact Summary -->
+                <div class="summary-row exact-summary"
+                     *ngIf="currentSplitType === 3">
+                  <span>Total assigned</span>
+                  <strong [class.valid]="getTotalExact() === +expenseForm.get('amount')?.value"
+                          [class.invalid]="getTotalExact() !== +expenseForm.get('amount')?.value">
+                    ₹{{ getTotalExact() | number:'1.2-2' }}
+                    {{ getTotalExact() === +expenseForm.get('amount')?.value
+                       ? '✅' : '(must equal total)' }}
+                  </strong>
+                </div>
+  
+              </div>
+            </div>
+          </div>
+  
+          <mat-divider></mat-divider>
+  
+          <!-- Error -->
+          <div class="error-message" *ngIf="errorMessage">
+            <mat-icon>error</mat-icon>
+            {{ errorMessage }}
+          </div>
+  
+          <!-- Actions -->
+          <div class="form-actions">
+            <button mat-stroked-button type="button"
+                    (click)="goBack()">
+              Cancel
+            </button>
+            <button mat-raised-button color="primary"
+                    type="submit"
+                    [disabled]="isLoading || expenseForm.invalid ||
+                                selectedMemberIds.length === 0">
+              <mat-spinner diameter="20" *ngIf="isLoading"></mat-spinner>
+              <span *ngIf="!isLoading">
+                {{ isEditMode ? 'Update' : 'Add Expense' }}
+              </span>
+            </button>
+          </div>
+  
+        </form>
+      </mat-card-content>
     </mat-card>
-</div>
+  
+  </div>

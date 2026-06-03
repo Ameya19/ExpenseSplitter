@@ -5,5 +5,10 @@ main {
   
     &.with-navbar {
       min-height: calc(100vh - 64px);
+      padding: 24px;
+
+      @media (max-width: 768px) {
+        padding: 16px;
+      }
     }
 }

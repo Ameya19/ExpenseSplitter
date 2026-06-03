@@ -1,3 +1,4 @@
+import { GroupMember } from './../../../core/models/group.model';
 import { GroupService } from './../../../core/services/group.service';
 import { Component, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
@@ -16,13 +17,15 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { CommonModule } from "@angular/common";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { Group } from "../../../core/models/group.model";
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDividerModule } from '@angular/material/divider';
 
 @Component({
     selector: 'app-expense-form',
     templateUrl: 'expense-form.component.html',
     styleUrl: 'expense-form.component.scss',
     standalone: true,
-    imports: [MatButton, MatIconButton, MatIconModule, MatCard, MatCardContent, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, MatSelect, MatOption, MatSuffix, MatDatepickerModule, CommonModule, MatProgressSpinner]
+    imports: [MatButton, MatIconButton, MatIconModule, MatCard, MatCardContent, FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatError, MatSelect, MatOption, MatSuffix, MatDatepickerModule, CommonModule, MatProgressSpinner, MatCheckboxModule, MatDividerModule]
 })
 export class ExpenseFormComponent implements OnInit {
     expenseForm: FormGroup;
@@ -33,6 +36,11 @@ export class ExpenseFormComponent implements OnInit {
     errorMessage = '';
     groups: Group[] = [];
     isGroupsLoading = false;
+    groupMembers: GroupMember[] = [];
+    selectedMemberIds: string[] = [];
+    exactAmounts: Record<string, number> = {};
+    percentages: Record<string, number> = {};
+    isLoadingMembers = false;
 
     categories = [
         { value: 1, label: 'Food' },
@@ -72,6 +80,7 @@ export class ExpenseFormComponent implements OnInit {
         this.groupId = this.route.snapshot.queryParamMap.get('groupId');
         if (this.groupId) {
             this.expenseForm.patchValue({ groupId: this.groupId });
+            this.loadGroupMembers(this.groupId);
         }
 
         this.loadGroups();
@@ -82,6 +91,57 @@ export class ExpenseFormComponent implements OnInit {
         if(this.isEditMode && this.expenseId)
         {
             this.loadExpense(this.expenseId);
+        }
+
+        this.expenseForm.get('splitType')?.valueChanges.subscribe(() => {
+            this.recalculateSplits();
+        });
+
+        this.expenseForm.get('amount')?.valueChanges.subscribe(() => {
+            this.recalculateSplits();
+        })
+    }
+
+    loadGroupMembers(groupId: string) {
+        this.isLoadingMembers = true;
+
+        this.groupService.getGroupById(groupId).subscribe({
+            next: (group) => {
+                this.groupMembers = group.members;
+
+                this.selectedMemberIds = group.members.map((m: GroupMember) => m.userId);
+
+                this.initializeSplits();
+                this.isLoadingMembers = false;
+            },
+            error: () =>{
+                this.isLoadingMembers = false;
+            }
+        });
+    }
+
+    initializeSplits(): void {
+        const count = this.groupMembers.length;
+
+        this.groupMembers.forEach((m: GroupMember) => {
+            this.exactAmounts[m.userId] = 0;
+            this.percentages[m.userId] = count > 0 ? Math.round(100 / count) : 0;
+        });
+
+        this.recalculateSplits();
+    }
+
+    recalculateSplits(): void{
+        const splitType = this.expenseForm.get('splitType')?.value;
+        const amount = this.expenseForm.get('amount')?.value;
+        const count = this.selectedMemberIds.length;
+
+        if(splitType === 1 && count > 0)
+        {
+            const share = Math.round((amount / count) * 100) / 100;
+            this.selectedMemberIds.forEach(id => {
+                this.exactAmounts[id] = share
+            });
         }
     }
 
@@ -128,6 +188,31 @@ export class ExpenseFormComponent implements OnInit {
             return;
         }
 
+        if(this.selectedMemberIds.length === 0)
+        {
+            this.errorMessage = 'Select at least one member to split with.';
+            return;
+        }
+
+        const splitType = this.expenseForm.get('splitType')?.value;
+        const amount = this.expenseForm.get('amount')?.value;
+
+        if(splitType === 2) {
+            const total = this.getTotalPercentages();
+            if(total != 100) {
+                this.errorMessage = `Percentages must total 100%. Current ${total}`;
+                return;
+            }
+        }
+
+        if(splitType === 3){
+            const total = this.getTotalExact();
+            if(total != amount){
+                this.errorMessage = `Split amount (₹${total}) must equal total (₹${amount})`;
+                return;
+            }
+        }
+
         this.isLoading = true;
         this.errorMessage = '';
         
@@ -149,7 +234,8 @@ export class ExpenseFormComponent implements OnInit {
         }
         else{
             this.expenseService.createExpense({
-            ...formValue, paidByUserId: currentUser!.id}).subscribe({
+            ...formValue, paidByUserId: currentUser!.id, 
+            splits: this.buildSplits()}).subscribe({
                 next: () => {
                     this.isLoading = false;
                     if (this.groupId) {
@@ -175,7 +261,64 @@ export class ExpenseFormComponent implements OnInit {
         }
     }
 
+    onGroupChange(): void {
+        const groupId = this.expenseForm.get('groupId')?.value;
+
+        if(!groupId)
+            return;
+
+        this.groupService.getGroupById(groupId).subscribe({
+            next: (group) => {
+                this.groupMembers = group.members;
+                this.selectedMemberIds = group.members.map(m => m.userId);
+            }
+        })
+    }
+
+    buildSplits(): any[] {
+        const splitType = this.expenseForm.get('splitType')?.value;
+        const amount = this.expenseForm.get('amount')?.value;
+
+        const selectedUsers = this.groupMembers.filter((m: GroupMember) => this.selectedMemberIds.includes(m.userId));
+        
+        return selectedUsers.map(m => ({
+            userId: m.userId,
+            shareAmount: splitType === 3 ? this.exactAmounts[m.userId] || 0 : null,
+            sharePercentage: splitType === 2 ? this.percentages[m.userId] || 0 : null
+        }));
+    }
+
+    getEqualShare(): number {
+        const amount = Number(this.expenseForm.get('amount')?.value || 0);
+        const count = this.selectedMemberIds.length;
+
+        return count > 0 ? Math.round((amount / count) * 100) / 100 : 0;
+    }
+
+    getTotalPercentages(): number {
+        return this.selectedMemberIds.reduce((sum, id) => sum + (this.percentages[id] || 0), 0);
+    }
+
+    getTotalExact(): number {
+        return this.selectedMemberIds.reduce((sum, id) => sum + (this.exactAmounts[id] || 0), 0);
+    }
+
+    toggleMember(userId: string, checked: boolean): void {
+        if(checked) {
+            if(!this.selectedMemberIds.includes(userId))
+            {
+                this.selectedMemberIds.push(userId);
+            }
+            else{
+                this.selectedMemberIds = this.selectedMemberIds.filter(id => id !== userId);
+            }
+        }
+    }
+
     get title() { return this.expenseForm.get('title'); }
     get amount() { return this.expenseForm.get('amount'); }
     get groupIdControl() { return this.expenseForm.get('groupId'); }
+    get currentSplitType(): number {
+        return this.expenseForm.get('splitType')?.value;
+    }
 }

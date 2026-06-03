@@ -175,12 +175,14 @@
                 <div class="tab-content">
                     <div class="balances-list" *ngIf="balances.length > 0">
                         <div class="balance-item" *ngFor="let balance of balances">
-                            <div class="balance-avatar">
-                                {{ balance.displayName.charAt(0).toUpperCase() }}
+                            <div class="group-avatar">
+                                {{ balance.displayName.charAt(0).toUpperCase() }} 
                             </div>
-                            <div class="balance-info">
-                                <h3>{{ balance.displayName }}</h3>
-                                <p>{{ balance.status }}</p>
+                            <div class="balance-name">
+                                <h3>{{ balance.displayName }} </h3>
+                            </div>
+                            <div class="balance-status">
+                                <p>{{ balance.status }} </p>
                             </div>
                             <div class="balance-amount" [style.color]="getBalanceColor(balance.netBalance)">
                                 {{ balance.netBalance > 0 ? '+' : '' }}
@@ -192,8 +194,8 @@
                     <!-- Suggestions -->
                     <div class="suggestions" *ngIf="suggestions.length > 0">
                         <div class="suggestion-item" *ngFor="let suggestion of suggestions">
-                            <span class="from">{{ suggestion.toUserName }}</span>
-                            <mat-card>arrow-forward</mat-card>
+                            <span class="from">{{ suggestion.fromUserName }}</span>
+                            <mat-icon>arrow_forward</mat-icon>
                             <span class="to">{{ suggestion.toUserName }}</span>
                             <span class="amount">
                                 ₹{{ suggestion.amount | number:'1.2-2' }}

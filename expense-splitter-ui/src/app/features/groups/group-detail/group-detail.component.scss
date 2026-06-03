@@ -149,70 +149,92 @@
     }
   }
   
-  // Balances
-  .balance-list {
-    margin-bottom: 32px;
-  
-    .balance-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--app-border);
-      &:last-child { border-bottom: none; }
-    }
-  
-    .balance-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: var(--app-border-strong);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+// Balances
+.balance-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 24px;
+
+  .balance-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    background: white;
+    border: 1px solid #f0f0f0;
+    transition: background 0.2s;
+
+    &:hover { background: #f9f9f9; }
+  }
+
+  .balance-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #3f51b5;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .balance-name {
+    flex: 1;
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .balance-status {
+    font-size: 13px;
+    font-weight: 500;
+    min-width: 60px;
+    text-align: center;
+  }
+
+  .balance-amount {
+    font-weight: 700;
+    font-size: 16px;
+    min-width: 100px;
+    text-align: right;
+  }
+}
+
+// Suggestions
+.suggestions {
+  h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #333;
+  }
+
+  .suggestion-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: #f8f9ff;
+    border-radius: 8px;
+    margin-bottom: 8px;
+
+    .from { font-weight: 600; color: #f44336; flex: 1; }
+    .to { font-weight: 600; color: #4caf50; flex: 1; }
+    mat-icon { color: #666; }
+    .amount {
       font-weight: 700;
-    }
-  
-    .balance-info {
-      flex: 1;
-      h3 { margin: 0; font-size: 15px; }
-      p { margin: 2px 0 0; font-size: 12px; color: var(--app-text-muted); }
-    }
-  
-    .balance-amount {
-      font-weight: 700;
-      font-size: 16px;
+      color: #333;
+      min-width: 80px;
+      text-align: right;
     }
   }
-  
-  // Suggestions
-  .suggestions {
-    h3 {
-      font-size: 16px;
-      font-weight: 600;
-      margin-bottom: 16px;
-      color: var(--app-text);
-    }
-  
-    .suggestion-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 16px;
-      background: var(--app-unread-bg);
-      border-radius: 8px;
-      margin-bottom: 8px;
-  
-      .from { font-weight: 600; color: #f44336; }
-      .to { font-weight: 600; color: #4caf50; }
-      mat-icon { color: var(--app-text-secondary); }
-      .amount {
-        margin-left: auto;
-        font-weight: 700;
-        color: var(--app-text);
-      }
-    }
-  }
+}
 
   // Add Member Card
 .add-member-card {

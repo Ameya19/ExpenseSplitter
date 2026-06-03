@@ -113,7 +113,7 @@
           <div class="group-list" *ngIf="groups.length > 0">
             <div
               class="group-item"
-              *ngFor="let group of groups"
+              *ngFor="let group of groups.slice(0,4)"
               (click)="navigateToGroup(group.id)">
               <div class="group-avatar">
                 {{ group.name.charAt(0).toUpperCase() }}
@@ -165,7 +165,7 @@
           <div class="expense-list" *ngIf="recentExpenses.length > 0">
             <div
               class="expense-item"
-              *ngFor="let expense of recentExpenses">
+              *ngFor="let expense of recentExpenses.slice(0,4)">
               <div class="expense-icon">
                 <mat-icon>{{ getCategoryIcon(expense.category) }}</mat-icon>
               </div>
