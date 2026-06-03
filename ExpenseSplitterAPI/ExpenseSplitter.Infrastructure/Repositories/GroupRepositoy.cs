@@ -114,11 +114,12 @@ namespace ExpenseSplitter.Infrastructure.Repositories
 
         public async Task<IEnumerable<Group>> GetGroupsByUserId(Guid userId)
         {
-            return await this.appDbContext.Groups
-                .Include(m => m.Members)
-                .ThenInclude(gm => gm.User)
-                .Include(e => e.Expenses)
-                .Where(x => x.CreatedByUserId == userId).ToListAsync();
+            return await appDbContext.Groups
+                .Include(g => g.Members)
+                    .ThenInclude(m => m.User)
+                .Where(g => g.Members.Any(m => m.UserId == userId))
+                .OrderByDescending(g => g.CreatedAt)
+                .ToListAsync();
         }
 
         public async Task<bool> RemoveMember(Guid groupId, Guid userId)
