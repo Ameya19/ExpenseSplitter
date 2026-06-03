@@ -304,14 +304,16 @@ export class ExpenseFormComponent implements OnInit {
     }
 
     toggleMember(userId: string, checked: boolean): void {
-        if(checked) {
+        if(checked)
+        {
             if(!this.selectedMemberIds.includes(userId))
             {
                 this.selectedMemberIds.push(userId);
             }
-            else{
-                this.selectedMemberIds = this.selectedMemberIds.filter(id => id !== userId);
-            }
+        }
+        else
+        {
+            this.selectedMemberIds = this.selectedMemberIds.filter(id => id !== userId);
         }
     }
 

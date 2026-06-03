@@ -6,14 +6,22 @@
 
 .page-header {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 12px;
   margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
 
   h1 {
     font-size: 24px;
     font-weight: 600;
     margin: 0;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
   }
 }
 
@@ -177,5 +185,20 @@ mat-divider {
   button {
     height: 44px;
     min-width: 100px;
+  }
+}
+
+.search-field {
+  @media (max-width: 600px) {
+    width: 100%;
+  }
+}
+
+.category-field {
+  padding-left: 25px;
+
+  @media (max-width: 600px) {
+    padding-left: 0;
+    width: 100%;
   }
 }

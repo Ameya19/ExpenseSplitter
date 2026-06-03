@@ -6,10 +6,12 @@
             <h1>Expenses</h1>
             <p>Track all your shared expenses</p>
         </div>
-        <button mat-raised-button color="primary" routerLink="/expenses/create">
-            <mat-icon>add</mat-icon>
-            Add Expense
-        </button>
+        <div class="header-actions">
+            <button mat-raised-button color="primary" routerLink="/expenses/create">
+                <mat-icon>add</mat-icon>
+                Add Expense
+            </button>
+        </div>
     </div>
 
     <!-- Filters -->
@@ -22,8 +24,8 @@
 
         <mat-form-field appearance="outline" class="category-field">
             <mat-label>Category</mat-label>
-            <mat-select matInput [(ngModel)]="selectedCategory" (onModelChange)="onCategoryChange()">
-                <mat-option *ngFor="let cat of categories">
+            <mat-select matInput [(ngModel)]="selectedCategory" (ngModelChange)="onCategoryChange()">
+                <mat-option *ngFor="let cat of categories" [value]="cat.value">
                     {{ cat.label }}
                 </mat-option>
             </mat-select>

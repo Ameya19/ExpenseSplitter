@@ -55,10 +55,17 @@ export class GroupListComponent implements OnInit {
     onSearch() {
         const query = this.searchQuery.toLowerCase();
 
+        if(query.length === 0) {
+            this.filteredGroups = this.groups;
+            return;
+        }
+
         this.filteredGroups = this.groups.filter(g => {
-            g.name.toLowerCase().includes(query) ||
+            return g.name.toLowerCase().includes(query) ||
             g.description?.toLowerCase().includes(query)
         });
+
+        console.log(this.filteredGroups);
     }
     navigateToGroups(id: string): void {
         this.router.navigate(['/groups', id])

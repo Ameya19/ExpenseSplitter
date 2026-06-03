@@ -7,7 +7,9 @@ import { BalanceService } from "../../../core/services/balance.service";
 import { SettlementSuggestion } from "../../../core/models/balance.model";
 import { GroupService } from "../../../core/services/group.service";
 import { MatCard, MatCardContent } from "@angular/material/card";
-import { MatFormField, MatLabel, MatSuffix } from "@angular/material/form-field";
+import { MatFormField, MatLabel, MatSuffix, MatFormFieldModule } from "@angular/material/form-field";
+import { MatInputModule } from "@angular/material/input";
+import { MatSelectModule } from "@angular/material/select";
 import { FormsModule } from "@angular/forms";
 import { MatOption } from "@angular/material/select";
 import { MatIcon } from "@angular/material/icon";
@@ -19,7 +21,7 @@ import { MatButton } from "@angular/material/button";
     selector: 'app-settlement-list',
     templateUrl: 'settlement-list.component.html',
     styleUrl: 'settlement-list.component.scss',
-    imports: [MatCard, MatCardContent, MatFormField, MatLabel, FormsModule, MatOption, MatIcon, MatSuffix, MatProgressSpinner, MatButton, CommonModule]
+    imports: [MatCard, MatCardContent, MatFormField, MatLabel, FormsModule, MatOption, MatIcon, MatSuffix, MatProgressSpinner, MatButton, CommonModule, MatFormFieldModule, MatInputModule, MatSelectModule]
 })
 export class SettlementListComponent implements OnInit {
     isLoading = false;
@@ -77,11 +79,14 @@ export class SettlementListComponent implements OnInit {
     onGroupChange(): void {
         if( !this.selectedGroupId)
             return;
+
+        console.log(this.selectedGroupId);
         this.loadSuggestions();
     }
 
     loadSuggestions(): void {
         this.isLoadingSuggestions = true;
+        this.suggestions = [];
         this.balanceService.getSettlementSuggestions(this.selectedGroupId).subscribe({
             next: (suggestions) => {
                 this.suggestions = suggestions;
@@ -91,6 +96,8 @@ export class SettlementListComponent implements OnInit {
                 this.isLoadingSuggestions = false;
             }
         });
+
+        console.log(this.suggestions);
     }
 
     settleUp(suggestion: SettlementSuggestion): void {

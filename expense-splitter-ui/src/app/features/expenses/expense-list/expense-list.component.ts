@@ -70,11 +70,15 @@ export class ExpenseListComponent implements OnInit{
     }
 
     onCategoryChange(): void {
+        console.log("selectedCategory: " + this.selectedCategory);
+        console.log("searchQuery: " + this.searchQuery);
         this.applyFilters();
     }
 
     applyFilters(): void {
         let filtered = [...this.expenses];
+
+        console.log("selectedCategory: " + this.selectedCategory);
 
         if(this.searchQuery)
         {
@@ -84,6 +88,7 @@ export class ExpenseListComponent implements OnInit{
 
         if(this.selectedCategory !== 0)
         {
+            console.log(this.selectedCategory);
             filtered = filtered.filter(e => e.category === this.selectedCategory);
         }
 
