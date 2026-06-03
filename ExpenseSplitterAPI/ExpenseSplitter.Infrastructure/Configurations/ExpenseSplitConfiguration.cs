@@ -28,6 +28,12 @@ namespace ExpenseSplitter.Infrastructure.Configurations
                 .WithMany(u => u.ExpenseSplits)
                 .HasForeignKey(s => s.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // Split belongs to Expense
+            builder.HasOne(s => s.Expense)
+                .WithMany(e => e.Splits)
+                .HasForeignKey(s => s.ExpenseId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

@@ -16,5 +16,13 @@ namespace ExpenseSplitter.Core.DTOs.Expense
         public ExpenseCategory Category { get; set; }
         public SplitType SplitType { get; set; }
         public DateTime Date { get; set; }
+        public List<ExpenseSplitInputDto> Splits { get; set; } = [];
+    }
+
+    public class  ExpenseSplitInputDto 
+    {
+        public Guid UserId { get; set; }
+        public decimal? ShareAmount { get; set; }
+        public decimal? SharePercentage { get; set; }
     }
 }

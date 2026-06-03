@@ -1,5 +1,6 @@
 ﻿using ExpenseSplitter.Core.DTOs.Expense;
 using ExpenseSplitter.Core.Entities;
+using ExpenseSplitter.Core.Enums;
 using ExpenseSplitter.Core.Interfaces.Repositories;
 using ExpenseSplitter.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authorization;
@@ -23,8 +24,42 @@ namespace ExpenseSplitter.API.Controllers
         //https://localhost:7194/api/expenses
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> AddExpenses([FromBody]CreateExpenseDto expenseDto)
+        public async Task<IActionResult> AddExpenses([FromBody] CreateExpenseDto expenseDto)
         {
+            //Validate Splits
+            if (expenseDto.Splits == null || expenseDto.Splits.Count == 0)
+            {
+                return BadRequest("At least one split is required.");
+            }
+
+            //Validate Split Amounts
+            if (expenseDto.SplitType == SplitType.Equal)
+            {
+                var total = expenseDto.Splits.Sum(s => s.ShareAmount ?? 0);
+                if (total != expenseDto.Amount)
+                {
+                    return BadRequest("For equal splits, the total share amount must equal the expense amount.");
+                }
+            }
+
+            if(expenseDto.SplitType == SplitType.Percentage)
+            {
+                var total = expenseDto.Splits.Sum(s => s.ShareAmount ?? 0);
+                if (total != 100)
+                {
+                    return BadRequest("For percentage splits, the total should be equal to 100%");
+                }
+            }
+
+            if (expenseDto.SplitType == SplitType.Percentage)
+            {
+                decimal totalPercentage = expenseDto.Splits.Sum(s => s.SharePercentage ?? 0);
+                if (totalPercentage != 100)
+                {
+                    return BadRequest("For percentage splits, the total percentage must equal 100%.");
+                }
+            }
+
             var expenses = new Expense
             {
                 Amount = expenseDto.Amount,
@@ -36,7 +71,7 @@ namespace ExpenseSplitter.API.Controllers
                 PaidByUserId = expenseDto.PaidByUserId
             };
 
-            var response = await this.expenseRepository.AddExpenses(expenses);
+            var response = await this.expenseRepository.AddExpenses(expenses, expenseDto);
 
             return Ok(response);
         }

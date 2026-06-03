@@ -1,4 +1,5 @@
-﻿using ExpenseSplitter.Core.Entities;
+﻿using ExpenseSplitter.Core.DTOs.Expense;
+using ExpenseSplitter.Core.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace ExpenseSplitter.Core.Interfaces.Repositories
 {
     public interface IExpenseRepository
     {
-        public Task<Expense> AddExpenses(Expense expense);
+        public Task<Expense> AddExpenses(Expense expense, CreateExpenseDto dto);
         public Task<IEnumerable<Expense>> GetAllExpenses();
         public Task<Expense?> GetExpenseById(Guid id);
         public Task<IEnumerable<Expense>> GetExpensesByGroup(Guid id);

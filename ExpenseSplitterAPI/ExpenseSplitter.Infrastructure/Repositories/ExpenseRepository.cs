@@ -1,4 +1,5 @@
-﻿using ExpenseSplitter.Core.Entities;
+﻿using ExpenseSplitter.Core.DTOs.Expense;
+using ExpenseSplitter.Core.Entities;
 using ExpenseSplitter.Core.Interfaces.Repositories;
 using ExpenseSplitter.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -19,11 +20,42 @@ namespace ExpenseSplitter.Infrastructure.Repositories
             this.appDbContext = appDbContext;
         }
 
-        public async Task<Expense> AddExpenses(Expense expense)
+        public async Task<Expense> AddExpenses(Expense expense, CreateExpenseDto dto)
         {
+            expense.Splits = BuildSplits(dto);
+
             await appDbContext.AddAsync(expense);
             await appDbContext.SaveChangesAsync();
             return expense;
+        }
+
+        public List<ExpenseSplit> BuildSplits(CreateExpenseDto dto)
+        {
+            return dto.SplitType switch
+            {
+                // Equal split: Each user pays an equal share of the total amount.
+                Core.Enums.SplitType.Equal => dto.Splits.Select(s => new ExpenseSplit
+                {
+                    ExpenseId = Guid.Empty,
+                    UserId = s.UserId,
+                    ShareAmount = Math.Round(dto.Amount / dto.Splits.Count, 2),
+                }).ToList(),
+
+                // Percentage split: Each user pays a share of the total amount based on a specified percentage.
+                Core.Enums.SplitType.Percentage => dto.Splits.Select(s => new ExpenseSplit
+                {
+                    UserId = s.UserId,
+                    ShareAmount = Math.Round(dto.Amount * (s.SharePercentage!.Value) / 100, 2),
+                    SharePercentage = s.SharePercentage
+                }).ToList(),
+                Core.Enums.SplitType.Exact => dto.Splits.Select(s => new ExpenseSplit
+                {
+                    UserId = s.UserId,
+                    ShareAmount = s.ShareAmount!.Value
+                }).ToList(),
+
+                _ => []
+            };
         }
 
         public async Task<bool> DeleteExpense(Guid id)
