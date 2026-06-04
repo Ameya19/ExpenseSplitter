@@ -65,7 +65,7 @@ namespace ExpenseSplitter.Infrastructure.Repositories
 
                 if(balances.ContainsKey(settlement.ToUserId))
                 {
-                    balances[settlement.ToUserId] = (balances[settlement.ToUserId].Amount + settlement.Amount, balances[settlement.ToUserId].Name);
+                    balances[settlement.ToUserId] = (balances[settlement.ToUserId].Amount - settlement.Amount, balances[settlement.ToUserId].Name);
                 }
             }
 

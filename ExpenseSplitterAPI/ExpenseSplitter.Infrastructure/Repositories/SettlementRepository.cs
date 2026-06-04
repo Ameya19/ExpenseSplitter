@@ -50,6 +50,7 @@ namespace ExpenseSplitter.Infrastructure.Repositories
             return await this.appDbContext.Settlements
                 .Include(s => s.FromUser)
                 .Include(s => s.ToUser)
+                .Include(s => s.Group)
                 .Where(s => s.FromUserId == userId || s.ToUserId == userId)
                 .OrderByDescending(s => s.CreatedAt)
                 .ToListAsync();

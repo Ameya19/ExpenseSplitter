@@ -78,9 +78,9 @@ namespace ExpenseSplitter.Infrastructure.Repositories
                 GroupName = group.Name,
                 TotalAmount = Math.Round(totalAmount, 2),
                 TotalTransactions = expenses.Count,
-                CategoryBreakDown = categoryBreakDown,
+                CategoryBreakdown = categoryBreakDown,
                 MemberSpending = memberSpending,
-                MonthlyBreakdownDto = monthlyBreakdown
+                MonthlyBreakdown = monthlyBreakdown
             };
 
             return response;
@@ -126,6 +126,7 @@ namespace ExpenseSplitter.Infrastructure.Repositories
             var expenses = await this.appDbContext.Expenses
                 .Include(e => e.PaidBy)
                 .Include(e => e.Splits)
+                .Include(e => e.Group)
                 .Where(e => groupIds.Contains(e.GroupId) && (e.PaidByUserId == userId || e.Splits.Any(s => s.UserId == userId)))
                 .ToListAsync();
 
