@@ -12,9 +12,9 @@ namespace ExpenseSplitter.Core.DTOs.Report
         public string GroupName { get; set; } = string.Empty;
         public decimal TotalAmount { get; set; }
         public int TotalTransactions { get; set; }
-        public List<CategoryBreakdownDto> CategoryBreakDown { get; set; } = [];
+        public List<CategoryBreakdownDto> CategoryBreakdown { get; set; } = [];
         public List<MemberSpendingDto> MemberSpending { get; set; } = [];
-        public List<MonthlyBreakdownDto> MonthlyBreakdownDto { get; set; } = [];
+        public List<MonthlyBreakdownDto> MonthlyBreakdown { get; set; } = [];
     }
 
     public class CategoryBreakdownDto
