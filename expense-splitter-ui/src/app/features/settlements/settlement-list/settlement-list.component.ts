@@ -44,7 +44,7 @@ export class SettlementListComponent implements OnInit {
     ngOnInit(): void {
         this.currenUserId = this.authService.getCurrentUser()?.id || '';
         this.loadGroups();
-        this.loadMySettlements();
+        this.loadGroupSettlements();
     }
 
     loadGroups(): void {
@@ -65,11 +65,13 @@ export class SettlementListComponent implements OnInit {
         })
     }
 
-    loadMySettlements(): void {
+    loadGroupSettlements(): void {
         this.isLoading = true;
-        this.settlementService.getSettlementByUser(this.currenUserId).subscribe({
+        this.settlements = [];
+        this.settlementService.getSettlementsByGroup(this.selectedGroupId).subscribe({
             next: (settlements) => {
                 this.settlements = settlements;
+                console.log(settlements);
                 this.isLoading = false;
             },
             error: () => { this.isLoading = false; }
@@ -82,6 +84,7 @@ export class SettlementListComponent implements OnInit {
 
         console.log(this.selectedGroupId);
         this.loadSuggestions();
+        this.loadGroupSettlements();
     }
 
     loadSuggestions(): void {
@@ -114,7 +117,7 @@ export class SettlementListComponent implements OnInit {
             next: (settlement) => {
                 this.settlementService.completeSettlement(settlement.id).subscribe({
                     next: () => {
-                        this.loadMySettlements();
+                        this.loadGroupSettlements();
                         this.loadSuggestions();
                     }
                 });
@@ -125,7 +128,7 @@ export class SettlementListComponent implements OnInit {
     completeSettlement(id: string): void {
         this.settlementService.completeSettlement(id).subscribe({
             next: () => {
-                this.loadMySettlements();
+                this.loadGroupSettlements();
                 this.loadSuggestions();
             }
         });

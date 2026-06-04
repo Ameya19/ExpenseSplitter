@@ -1,3 +1,4 @@
+import { NotificationService } from './../../../core/services/notification.service';
 import { GroupMember } from './../../../core/models/group.model';
 import { GroupService } from './../../../core/services/group.service';
 import { Component, OnInit } from "@angular/core";
@@ -64,7 +65,8 @@ export class ExpenseFormComponent implements OnInit {
         private router: Router,
         private expenseService: ExpenseService,
         private authService: AuthService,
-        private groupService: GroupService
+        private groupService: GroupService,
+        private notificationService: NotificationService
     ) {
         this.expenseForm = this.fb.group({
             title: ['', [Validators.required, Validators.minLength(2)]],
@@ -238,8 +240,8 @@ export class ExpenseFormComponent implements OnInit {
             splits: this.buildSplits()}).subscribe({
                 next: () => {
                     this.isLoading = false;
-                    if (this.groupId) {
-                        this.router.navigate(['/groups', this.groupId]);
+                    if (formValue.groupId) {
+                        this.router.navigate(['/groups', formValue.groupId]);
                     } else {
                         this.router.navigate(['/expenses']);
                     }
@@ -283,7 +285,9 @@ export class ExpenseFormComponent implements OnInit {
         
         return selectedUsers.map(m => ({
             userId: m.userId,
-            shareAmount: splitType === 3 ? this.exactAmounts[m.userId] || 0 : null,
+            shareAmount: splitType === 3 ? this.exactAmounts[m.userId] || 0 : 
+                splitType === 1 ? Math.round((amount / this.selectedMemberIds.length) * 100) / 100 : 
+                amount * this.percentages[m.userId] / 100,
             sharePercentage: splitType === 2 ? this.percentages[m.userId] || 0 : null
         }));
     }

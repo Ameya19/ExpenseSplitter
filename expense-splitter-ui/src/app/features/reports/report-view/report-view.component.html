@@ -62,7 +62,7 @@
                                     <mat-icon>receipt_long</mat-icon>
                                 </div>
                                 <div class="card-info">
-                                    <h2>₹{{ groupReport.totalExpenses | number:'1.2-2' }}</h2>
+                                    <h2>₹{{ groupReport.totalAmount | number:'1.2-2' }}</h2>
                                     <p>Total Spent</p>
                                 </div>
                             </mat-card-content>
@@ -163,7 +163,7 @@
                         <mat-card class="report-card full-width">
                             <mat-card-header>
                                 <mat-card-title>
-                                    <mat-icon>calender_month</mat-icon>
+                                    <mat-icon>calendar_month</mat-icon>
                                     Monthly Breakdown
                                 </mat-card-title>
                             </mat-card-header>
@@ -195,14 +195,14 @@
                     <mat-spinner diameter="40"></mat-spinner>
                 </div>
 
-                <ng-container *ngIf="isLoadingUserReports && userReport">
+                <ng-container *ngIf="!isLoadingUserReports && userReport">
 
                     <!-- Summary cards -->
                     <div class="summary-cards">
                         <mat-card class="summary-card">
                             <mat-card-content>
                                 <div class="card-icon" style="background: #4caf50;">
-                                    <mat-icon>arrow-upward</mat-icon>
+                                    <mat-icon>arrow_upward</mat-icon>
                                 </div>
                                 <div class="card-info">
                                     <h2>₹{{ userReport.totalPaidAcrossGroups | number:'1.2-2' }}</h2>
@@ -214,7 +214,7 @@
                         <mat-card class="summary-card">
                             <mat-card-content>
                                 <div class="card-icon" style="background: #f44336;">
-                                    <mat-icon>arrow-downward</mat-icon>
+                                    <mat-icon>arrow_downward</mat-icon>
                                 </div>
                                 <div class="card-info">
                                     <h2>{{ userReport.totalOwedAcrossGroups | number: '1.2-2'}}</h2>
@@ -251,7 +251,7 @@
                             </mat-card-header>
                             <mat-card-content>
                                 <div class="group-summary-list">
-                                    <div class="group summary-item" *ngFor="let g of userReport.groupSummerise">
+                                    <div class="group summary-item" *ngFor="let g of userReport.groupSummaries">
                                         <div class="group-avatar">
                                             {{ g.groupName.charAt(0).toUpperCase() }}
                                         </div>
@@ -278,7 +278,7 @@
                             </mat-card-header>
                             <mat-card-content>
                                 <div class="category-list">
-                                    <div class="category-item" *ngFor="let cat of userReport.categoryBreakDown">
+                                    <div class="category-item" *ngFor="let cat of userReport.categoryBreakdown">
                                         <div class="category-header">
                                             <div class="category-label">
                                                 <div class="cat-icon" [style.background]="getCategoryColor(cat.category) + '20'">

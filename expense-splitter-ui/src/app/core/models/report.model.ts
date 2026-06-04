@@ -1,7 +1,7 @@
 export interface GroupReport{
     groupId: string,
     groupName: string,
-    totalExpenses: number,
+    totalAmount: number,
     totalTransactions: number,
     categoryBreakdown: CategoryBreakdown[],
     memberSpending: MemberSpending[],
@@ -37,8 +37,8 @@ export interface UserReport{
     totalPaidAcrossGroups: number,
     totalOwedAcrossGroups: number,
     netBalanceAcrossGroups: number,
-    groupSummerise: GroupSummary[],
-    categoryBreakDown: CategoryBreakdown[]
+    groupSummaries: GroupSummary[],
+    categoryBreakdown: CategoryBreakdown[]
 }
 
 export interface GroupSummary{
