@@ -29,13 +29,13 @@ namespace ExpenseSplitter.API.Controllers
         }
 
         [HttpGet("group/{groupId:Guid}/range")]
-        public async Task<IActionResult> GetGroupReportByDateRange([FromRoute] Guid groupId, [FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
+        public async Task<IActionResult> GetGroupReportByDateRange([FromRoute] Guid groupId, [FromQuery] DateTime from, [FromQuery] DateTime to)
         {
-            if (startDate > endDate)
+            if (from > to)
             {
                 return BadRequest("Start date must be before end date.");
             }
-            var report = await this.reportRepository.GetGroupReportByDateRange(groupId, startDate, endDate);
+            var report = await this.reportRepository.GetGroupReportByDateRange(groupId, from, to);
             if (report == null)
             {
                 return NotFound("Report not found!");
@@ -54,7 +54,7 @@ namespace ExpenseSplitter.API.Controllers
             return Ok(report);
         }
 
-        [HttpGet("user/me")]
+        [HttpGet("me")]
         public async Task<IActionResult> GetMyReport()
         {
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value!);

@@ -84,6 +84,8 @@ namespace ExpenseSplitter.API.Controllers
                         Note = settlement.Note,
                         Status = settlement.Status.ToString(),
                         CreatedAt = settlement.CreatedAt,
+                        FromUserName = settlement.FromUser.DisplayName,
+                        ToUserName = settlement.ToUser.DisplayName
                     };
 
                     response.Add(settlementDto);
@@ -117,7 +119,7 @@ namespace ExpenseSplitter.API.Controllers
         }
 
         [HttpGet("user/{userId:Guid}")]
-        public async Task<IActionResult> GetSettlementsByUserId([FromQuery] Guid userId)
+        public async Task<IActionResult> GetSettlementsByUserId([FromRoute] Guid userId)
         {
             var settlements = await this.settlementRepository.GetSettlementsByUserId(userId);
             if (settlements == null)
@@ -137,6 +139,8 @@ namespace ExpenseSplitter.API.Controllers
                         Note = settlement.Note,
                         Status = settlement.Status.ToString(),
                         CreatedAt = settlement.CreatedAt,
+                        FromUserName = settlement.FromUser.DisplayName,
+                        ToUserName = settlement.ToUser.DisplayName
                     };
                     response.Add(settlementDto);
                 }
