@@ -43,6 +43,12 @@ export const routes: Routes = [
             import('./features/reports/reports.routes').then(m => m.reportRoutes)
     },
     {
+        path: 'notifications',
+        canActivate: [authGuard],
+        loadChildren: () => 
+            import('./features/notifications/notifications.routes').then(m => m.notificationRoutes)
+    },
+    {
         path: '**',
         redirectTo: 'dashboard'
     }

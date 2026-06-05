@@ -2,6 +2,7 @@
 using ExpenseSplitter.Core.Entities;
 using ExpenseSplitter.Core.Enums;
 using ExpenseSplitter.Core.Interfaces.Repositories;
+using ExpenseSplitter.Infrastructure.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,10 +14,12 @@ namespace ExpenseSplitter.API.Controllers
     public class GroupController : ControllerBase
     {
         private readonly IGroupRepository groupRepository;
+        private readonly NotificationHelper notificationHelper;
 
-        public GroupController(IGroupRepository groupRepository)
+        public GroupController(IGroupRepository groupRepository, NotificationHelper notificationHelper)
         {
             this.groupRepository = groupRepository;
+            this.notificationHelper = notificationHelper;
         }
 
         [HttpPost]
@@ -167,6 +170,15 @@ namespace ExpenseSplitter.API.Controllers
             if (!result)
                 return BadRequest("User is already a member of this group.");
 
+            await notificationHelper.NotifyUser(
+                userId: userId,
+                type: NotificationType.GroupInvite,
+                title: "Added to Group",
+                message: "You have been added to a group",
+                referenceId: groupId,
+                referenceType: "Group"
+            );
+
             return Ok(new
             {
                 message = "Member Added successfully!"
@@ -180,6 +192,15 @@ namespace ExpenseSplitter.API.Controllers
 
             if (!result)
                 return BadRequest("Member not found in this group.");
+
+            await notificationHelper.NotifyUser(
+                userId: userId,
+                type: NotificationType.MemberJoined,
+                title: "Removed from Group",
+                message: "You have been removed from a group",
+                referenceId: groupId,
+                referenceType: "Group"
+            );
 
             return Ok(new
             {

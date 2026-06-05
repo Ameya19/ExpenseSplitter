@@ -1,0 +1,113 @@
+<div class="page-container">
+
+    <!-- Header -->
+    <div class = "page-header">
+        <div>
+            <h1>
+                Notifications
+                <span class="unread-badge" *ngIf="unreadCount > 0"> 
+                    {{ unreadCount }}
+                </span>
+            </h1>
+            <p>Stay updated with group activity</p>
+        </div>
+        <button mat-stroked-button *ngIf="unreadCount > 0" (click)="markAllAsRead()">
+            <mat-icon>done_all</mat-icon>
+            Mark All as Read
+        </button>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading-container" *ngIf="isLoading">
+        <mat-spinner diameter="40"></mat-spinner>
+    </div>
+
+    <ng-container *ngIf="!isLoading">
+
+        <!-- Empty State -->
+        <div class="empty-state" *ngIf="notifications.length === 0">
+            <mat-icon>notifications_none</mat-icon>
+            <h3>No notifications yet</h3>
+            <p>You'll be notified when something happens in your groups</p>
+        </div>
+
+        <!-- Unread Notifications -->
+        <div class="section" *ngIf="unreadNotifications.length > 0">
+            <h2 class="section-title">
+                <mat-icon>mark_email_unread</mat-icon>
+                Unread {{ unreadNotifications.length }}
+            </h2>
+
+            <div class="notification-list">
+                <mat-card class="notification-card unread" *ngFor="let notification of unreadNotifications">
+                    <mat-card-content>
+
+                        <!-- Icon -->
+                        <div class="notification-icon" [style.background]="getNotificationColor(notification.type) + '20'" >
+                            <mat-icon [style.color]="getNotificationColor(notification.type)">
+                                {{ getNotificationIcon(notification.type) }}
+                            </mat-icon>
+                        </div>
+
+                        <!-- Content -->
+                        <div class="notification-content">
+                            <h3>{{ notification.title }}</h3>
+                            <p>{{ notification.message }}</p>
+                            <span class="time">
+                                {{ getTimeAgo(notification.createdAt) }}
+                            </span>
+                        </div>                    
+
+                        <!-- Actions -->
+                        <div class="notification-actions">
+                            <button mat-icon-button matTooltip="Mark as read" (click)="markAsRead(notification.id)">
+                                <mat-icon>done</mat-icon>
+                            </button>
+                            <button mat-icon-button color="warn" matTooltip="Delete" (click)="deleteNotification(notification.id)">
+                                <mat-icon>close</mat-icon>
+                            </button>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+            </div>
+        </div>
+
+        <!-- Read Notifications -->
+        <div class="section" *ngIf="readNotifications.length > 0">
+            <h2 class="section-title">
+                <mat-icon>mark_email_read</mat-icon>
+                Earlier
+            </h2>
+
+            <div class="notification-list">
+                <mat-card class="notification-card read" *ngFor="let notification of readNotifications">
+                    <mat-card-content>
+
+                        <!-- Icon -->
+                        <div class="notification-icon" [style.background]="getNotificationColor(notification.type) + '10'">
+                            <mat-icon [style.color]="getNotificationColor(notification.type) + '80'">
+                                {{ getNotificationIcon(notification.type) }}
+                            </mat-icon>
+                        </div>
+
+                        <!-- Content -->
+                        <div class="notification-content">
+                            <h3>{{ notification.title }}</h3>
+                            <p>{{ notification.message }}</p>
+                            <span class="time">
+                                {{ getTimeAgo(notification.createdAt) }}
+                            </span>
+                        </div>
+
+                        <!-- Delete -->
+                        <div class="notification-actions">
+                            <button mat-icon-button color="warn" matTooltip="Delete" (click)="deleteNotification(notification.id)">
+                                <mat-icon>close</mat-icon>
+                            </button>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+            </div>
+        </div>
+    </ng-container>
+</div>

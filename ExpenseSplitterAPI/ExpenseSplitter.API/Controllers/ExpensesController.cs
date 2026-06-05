@@ -2,6 +2,7 @@
 using ExpenseSplitter.Core.Entities;
 using ExpenseSplitter.Core.Enums;
 using ExpenseSplitter.Core.Interfaces.Repositories;
+using ExpenseSplitter.Infrastructure.Helpers;
 using ExpenseSplitter.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,10 +16,12 @@ namespace ExpenseSplitter.API.Controllers
     public class ExpensesController : ControllerBase
     {
         private readonly IExpenseRepository expenseRepository;
+        private readonly NotificationHelper notificationHelper;
 
-        public ExpensesController(IExpenseRepository expenseRepository)
+        public ExpensesController(IExpenseRepository expenseRepository, NotificationHelper notificationHelper)
         {
             this.expenseRepository = expenseRepository;
+            this.notificationHelper = notificationHelper;
         }
 
         //https://localhost:7194/api/expenses
@@ -72,6 +75,14 @@ namespace ExpenseSplitter.API.Controllers
             };
 
             var response = await this.expenseRepository.AddExpenses(expenses, expenseDto);
+
+            await this.notificationHelper.NotifyGroupMembers(
+                groupId: expenseDto.GroupId, 
+                excludeUserId: expenseDto.PaidByUserId, 
+                type: NotificationType.ExpenseAdded, 
+                message: $"₹{expenseDto.Amount} added for '{expenseDto.Title}'", 
+                title: "New Expense Added"
+                );
 
             return Ok(response);
         }
@@ -216,10 +227,24 @@ namespace ExpenseSplitter.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteExpense(Guid id)
         {
+            var expense = await this.expenseRepository.GetExpenseById(id);
+            if (expense == null)
+            {
+                return NotFound();
+            }
+
             var deletedExpense = await this.expenseRepository.DeleteExpense(id);
 
             if (deletedExpense == true)
             {
+                await this.notificationHelper.NotifyGroupMembers(
+                    groupId: expense.GroupId,
+                    excludeUserId: expense.PaidByUserId,
+                    type: NotificationType.ExpenseDeleted,
+                    message: $"'{expense.Title}' was deleted",
+                    title: "Expense Deleted"
+                );
+
                 return Ok("Expense Deleted Successfully!");
             }
             else
@@ -244,12 +269,20 @@ namespace ExpenseSplitter.API.Controllers
 
             var expense = await this.expenseRepository.UpdateExpense(id, updatedExpense);
 
-            if(null == expense)
+            if (null == expense)
             {
                 return NotFound();
             }
             else
             {
+                await this.notificationHelper.NotifyGroupMembers(
+                    groupId: expense.GroupId,
+                    excludeUserId: expense.PaidByUserId,
+                    type: NotificationType.ExpenseUpdated,
+                    message: $"₹{updateExpenseDto.Amount} updated for '{updateExpenseDto.Title}'",
+                    title: "Expense Updated"
+                );
+
                 var response = new Expense
                 {
                     Amount = expense.Amount,

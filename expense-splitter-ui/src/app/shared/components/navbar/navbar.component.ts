@@ -10,12 +10,15 @@ import { MatBadge } from "@angular/material/badge";
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
 import { CommonModule } from "@angular/common";
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { interval } from "rxjs";
+import { switchMap } from "rxjs";
 
 @Component({
     selector: 'app-navbar',
     templateUrl: 'navbar.component.html',
     styleUrl: 'navbar.component.scss',
-    imports: [RouterLink, MatIcon, RouterLinkActive, MatIconButton, MatBadge, MatMenuModule, MatDividerModule, CommonModule]
+    imports: [RouterLink, MatIcon, RouterLinkActive, MatIconButton, MatBadge, MatMenuModule, MatDividerModule, CommonModule, MatTooltipModule]
 })
 export class NavbarComponent implements OnInit{
     readonly themeService = inject(ThemeService);
@@ -40,6 +43,14 @@ export class NavbarComponent implements OnInit{
     ngOnInit(): void {
         this.currentUser = this.authService.getCurrentUser();
         this.loadUnreadCount();
+
+        interval(30000).pipe(
+            switchMap(() => this.notificationService.getUnreadCount())).subscribe({
+            next: (res) => {
+                this.unreadCount = res.unreadCount;
+            },
+            error: () => {}
+        });
     }
 
     loadUnreadCount(): void {

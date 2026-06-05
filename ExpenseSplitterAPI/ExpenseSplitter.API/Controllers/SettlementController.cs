@@ -1,6 +1,7 @@
 ﻿using ExpenseSplitter.Core.DTOs.Settlement;
 using ExpenseSplitter.Core.Entities;
 using ExpenseSplitter.Core.Interfaces.Repositories;
+using ExpenseSplitter.Infrastructure.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,10 +13,12 @@ namespace ExpenseSplitter.API.Controllers
     public class SettlementController : ControllerBase
     {
         private readonly ISettlementRepository settlementRepository;
+        private readonly NotificationHelper notificationHelper;
 
-        public SettlementController(ISettlementRepository settlementRepository)
+        public SettlementController(ISettlementRepository settlementRepository, NotificationHelper notificationHelper)
         {
             this.settlementRepository = settlementRepository;
+            this.notificationHelper = notificationHelper;
         }
 
         [HttpPost]
@@ -48,6 +51,15 @@ namespace ExpenseSplitter.API.Controllers
             }
             else
             {
+                await notificationHelper.NotifyUser(
+                    userId: createSettlementDto.ToUserId,
+                    type: Core.Enums.NotificationType.SettlementRequested,
+                    message: $"You will receive ₹{createSettlementDto.Amount}",
+                    title: "New Settlement Request",
+                    referenceId: createSettlementDto.GroupId,
+                    referenceType: "Group"
+                );
+
                 var response = new SettlementResponseDto
                 {
                     Id = settlementDetails.Id,
@@ -151,13 +163,30 @@ namespace ExpenseSplitter.API.Controllers
         [HttpPut("{id:Guid}/complete")]
         public async Task<IActionResult> CompleteSettlement([FromRoute] Guid id)
         {
+            var settlement = await this.settlementRepository.GetSettlementById(id);
+
+            if(settlement == null)
+            {
+                return NotFound("Settlement not found.");
+            }
+
             var settlementDetails = await this.settlementRepository.CompleteSettlement(id);
+            
             if (settlementDetails == null)
             {
                 return NotFound("Settlement not found.");
             }
             else
             {
+                await this.notificationHelper.NotifyUser(
+                    userId: settlement.ToUserId,
+                    type: Core.Enums.NotificationType.SettlementCompleted,
+                    message: $"₹{settlement.Amount} payment completed",
+                    title: "Settlement Completed",
+                    referenceId: settlement.GroupId,
+                    referenceType: "Group"
+                );
+
                 var response = new SettlementResponseDto
                 {
                     Id = settlementDetails.Id,

@@ -3,6 +3,7 @@ using ExpenseSplitter.Core.Interfaces.Repositories;
 using ExpenseSplitter.Infrastructure;
 using ExpenseSplitter.Infrastructure.Auth;
 using ExpenseSplitter.Infrastructure.Data;
+using ExpenseSplitter.Infrastructure.Helpers;
 using ExpenseSplitter.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -99,6 +100,8 @@ builder.Services.AddScoped<IBalanceRepository, BalanceRepository>();
 builder.Services.AddScoped<ISettlementRepository, SettlementRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<IReportRepository, ReportRepository>();
+
+builder.Services.AddScoped<NotificationHelper>();
 
 builder.Services.AddCors(options =>
 {
